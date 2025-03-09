@@ -1,0 +1,24 @@
+{
+  "name": "speakparrow",
+  "version": "1.0.0",
+  "description": "this server created for speakParrow application.",
+  "main": "server.js",
+  "scripts": {
+    "test": "'test1'",
+    "dev": "nodemon server.js"
+  },
+  "author": "Muhammed Anshif",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "json": "^11.0.0",
+    "mongoose": "^8.12.1",
+    "uniqid": "^5.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
