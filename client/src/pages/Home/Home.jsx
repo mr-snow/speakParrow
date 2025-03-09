@@ -129,7 +129,7 @@ function Home() {
           >
             <form id="join-form" onSubmit={handleSubmit(onSubmit)}>
               <h2 className="text-center text-xl font-bold pb-5">
-                Hosting Room
+                Hosting Rooms
               </h2>
               <Controller
                 name="room_name"

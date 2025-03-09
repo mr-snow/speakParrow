@@ -14,7 +14,7 @@ app.use('/api/', routes);
 
 
 app.get('/', (req, res) => {
-  return res.status(200).json('Welcome');
+  return res.status(200).json('Welcome TO HOME');
 });
 
 const PORT = process.env.PORT || 5000;
