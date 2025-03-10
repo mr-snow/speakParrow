@@ -1,7 +1,9 @@
-import axios from 'axios'
-import React from 'react'
+import axios from 'axios';
 
-export const roomHosting=async(postData)=>{
-    const response=await axios.post('900/host',postData)
-    return response.data
-}
+export const roomHosting = async postData => {
+  const response = await axios.post(
+    'http://localhost:3000/api/room/host',
+    postData
+  );
+  return response.data;
+};

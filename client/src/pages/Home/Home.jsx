@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import BaseLayout from '../../components/base-layout/BaseLayout';
 import './Home.css';
-import { Select, Space, Modal, Button } from 'antd';
-import { useQuery } from '@tanstack/react-query';
+import { Select, Space, Modal, Button, message } from 'antd';
+import { useMutation, useQuery } from '@tanstack/react-query';
+
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../components/base-layout/input.jsx/Input';
+import { roomHosting } from '../../hooks/roomHost';
+import LoadSpinner from '../../components/commonComponents/spinner/spinner';
 
 const options = [
   { label: 'English', value: 'English' },
@@ -25,12 +28,36 @@ const options2 = [
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+
   const { control, handleSubmit, reset, setValue, register } = useForm();
+
+  const [localLoading, setLocalLoading] = useState(false);
+
+  const {
+    mutate: submitLogin,
+    isLoading, // Ensure this is correctly used in UI
+  } = useMutation({
+    mutationFn: roomHosting,
+    onSuccess: data => {
+      console.log('Success:', data);
+      message.success('Room Created');
+      setIsModalOpen(false);
+      reset();
+    },
+    onError: error => {
+      console.error('Error:', error);
+      message.error(error);
+      reset();
+    },
+  });
 
   const onSubmit = async data => {
     console.log('final_data', data);
-    // navigate(`/index?room=${data.room}`);
-    submintLogin(data);
+    setLocalLoading(true); // Set loading to true
+    submitLogin(data, {
+      onSuccess: () => setLocalLoading(false),
+      onError: () => setLocalLoading(false),
+    });
   };
 
   const { data } = useQuery({
@@ -122,58 +149,117 @@ function Home() {
           onOk={() => setIsModalOpen(false)}
           onCancel={() => setIsModalOpen(false)}
           footer={null}
+          className="custom-modal"
         >
-          <div
-            id="form__content__wrapper"
-            className="flex flex-col justify-center  items-center gap-2"
-          >
-            <form id="join-form" onSubmit={handleSubmit(onSubmit)}>
-              <h2 className="text-center text-xl font-bold pb-5">
-                Hosting Rooms
-              </h2>
-              <Controller
-                name="room_name"
-                control={control}
-                defaultValue=""
-                rules={{ required: 'Room name is required' }}
-                render={({ field, fieldState }) => (
-                  <div className="flex  flex-col items-center ">
-                    <Input label="Room Name" {...field} />
-                    {fieldState.error && (
-                      <p className="error text-red-700  w-fit pl-12">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-
-              <Controller
-                name="user_name"
-                control={control}
-                defaultValue=""
-                rules={{ required: 'User name is required' }}
-                render={({ field, fieldState }) => (
-                  <div className="flex  flex-col items-center ">
-                    <Input label="User Name" {...field} />
-                    {fieldState.error && (
-                      <p className="error text-red-700  w-fit pl-12  ">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </div>
-                )}
-              />
-
-              <div className=" flex justify-center items-center pt-5 ">
-                <input
-                  type="submit"
-                  value="Join Room"
-                  className="bg-blue-500 text-white px-4 py-2 rounded w-fit  "
+          {isLoading || localLoading ? (
+            <div className=" w-full h-full flex flex-col justify-center items-center bg-transparent">
+              <LoadSpinner />
+            </div>
+          ) : (
+            <div
+              id="form__content__wrapper"
+              className="flex flex-col justify-center  items-center gap-2"
+            >
+              <form id="join-form" onSubmit={handleSubmit(onSubmit)}>
+                <h2 className="text-center text-xl font-bold pb-5">
+                  Hosting Rooms
+                </h2>
+                <Controller
+                  name="room_name"
+                  control={control}
+                  defaultValue=""
+                  rules={{ required: 'Room name is required' }}
+                  render={({ field, fieldState }) => (
+                    <div className="flex  flex-col items-center ">
+                      <Input label="Room Name" {...field} />
+                      {fieldState.error && (
+                        <p className="error text-red-700  w-fit pl-12">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 />
-              </div>
-            </form>
-          </div>
+
+                <Controller
+                  name="user_id"
+                  control={control}
+                  defaultValue=""
+                  rules={{ required: 'User ID is required' }}
+                  render={({ field, fieldState }) => (
+                    <div className="flex  flex-col items-center ">
+                      <Input label="User ID" {...field} />
+                      {fieldState.error && (
+                        <p className="error text-red-700  w-fit pl-12  ">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                />
+
+                {/* Country Select */}
+                <Controller
+                  name="country"
+                  control={control}
+                  defaultValue={['india']} // Ensure default values match options
+                  render={({ field }) => (
+                    <div className="flex flex-col items-center w-full ">
+                      <p className="font-semibold pb-2">Select Country</p>
+                      <Select
+                        {...field}
+                        className="border-2 bg-transparent"
+                        mode="multiple"
+                        style={{ width: '100%' }}
+                        placeholder="Select a country"
+                        options={options2.map(
+                          ({ label, value, emoji, desc }) => ({
+                            label: (
+                              <Space>
+                                <span role="img" aria-label={label}>
+                                  {emoji}
+                                </span>
+                                {desc}
+                              </Space>
+                            ),
+                            value,
+                          })
+                        )}
+                      />
+                    </div>
+                  )}
+                />
+
+                {/* Language Select */}
+                <Controller
+                  name="language"
+                  control={control}
+                  defaultValue={['English']}
+                  render={({ field }) => (
+                    <div className="flex flex-col items-center w-full">
+                      <p className="font-semibold pb-2">Select Language</p>
+                      <Select
+                        {...field}
+                        className="border-2"
+                        mode="multiple"
+                        style={{ width: '100%' }}
+                        placeholder="Select a language"
+                        options={options}
+                      />
+                    </div>
+                  )}
+                />
+
+                <div className=" flex justify-center items-center pt-5 ">
+                  <input
+                    type="submit"
+                    value="Join Room"
+                    className="bg-blue-500 text-white px-4 py-2 rounded w-fit  "
+                  />
+                </div>
+              </form>
+            </div>
+          )}
         </Modal>
       </div>
     </BaseLayout>

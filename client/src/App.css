@@ -1,6 +1,82 @@
 @import 'tailwindcss';
 
-*{
-    margin:0;
+* {
+  margin: 0;
 }
 
+/* Custom Modal Background */
+.custom-modal .ant-modal-content {
+  background-color: #001f3f !important; /* Dark Blue */
+  color: white !important;
+}
+
+/* Custom Header */
+.custom-modal .ant-modal-header {
+  background-color: #002b5b !important; /* Darker Blue */
+  color: white !important;
+  border-bottom: none; /* Remove default border */
+}
+
+/* Custom Footer */
+.custom-modal .ant-modal-footer {
+  background-color: #001f3f !important;
+  border-top: none; /* Remove default border */
+}
+
+/* Change title color */
+.custom-modal .ant-modal-title {
+  color: white !important;
+}
+
+/* Customize Close Button */
+.custom-modal .ant-modal-close {
+  color: white !important; /* White Background */
+  border-radius: 50%; /* Make it circular */
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Custom Modal Select Box Background */
+.custom-modal .ant-select-selector {
+  color: white !important;
+  border: 1px solid #005599 !important; /* Optional: Border color */
+}
+
+/* Change Dropdown Menu Background */
+.custom-modal .ant-select-dropdown {
+  background-color: #002b5b !important; /* Darker Blue */
+}
+
+/* Change Select Option Text Color */
+.custom-modal .ant-select-item {
+  color: white !important;
+}
+
+/* Change Selected Option Background */
+.custom-modal .ant-select-item-option-selected {
+  background-color: #004080 !important; /* Slightly lighter blue */
+  color: white !important;
+}
+
+/* Change Hover Effect */
+.custom-modal .ant-select-item-option-active {
+  background-color: red !important;
+}
+
+/* Make Ant Design Spin Background Transparent */
+.custom-spin .ant-spin-container {
+  background: transparent !important;
+}
+
+.custom-spin .ant-spin {
+  background: transparent !important;
+}
+
+/* Hide any potential overlay */
+.custom-spin .ant-spin-blur {
+  background: transparent !important;
+}
