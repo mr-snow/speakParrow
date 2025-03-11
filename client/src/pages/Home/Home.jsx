@@ -8,7 +8,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../components/base-layout/input.jsx/Input';
-import { roomHosting } from '../../hooks/roomHost';
+import { roomHosting, getRooms } from '../../hooks/roomHost';
 import LoadSpinner from '../../components/commonComponents/spinner/spinner';
 
 const options = [
@@ -32,6 +32,9 @@ function Home() {
   const { control, handleSubmit, reset, setValue, register } = useForm();
 
   const [localLoading, setLocalLoading] = useState(false);
+
+  const [selectedCountry, setSelectedCountry] = useState([]);
+  const [selectedLanguage, setSelectedLanguage] = useState([]);
 
   const {
     mutate: submitLogin,
@@ -60,12 +63,10 @@ function Home() {
     });
   };
 
-  const { data } = useQuery({
-    queryKey: ['product_data'],
-    queryFn: async () => {
-      const response = await axios.get('https://fakestoreapi.com/products');
-      return response.data;
-    },
+  const { data, refetch } = useQuery({
+    queryKey: ['product_data', selectedCountry, selectedLanguage],
+    queryFn: () =>
+      getRooms({ country: selectedCountry, language: selectedLanguage }),
   });
 
   return (
@@ -91,6 +92,11 @@ function Home() {
                         style={{ width: '100%' }}
                         placeholder="Select a country"
                         options={options2}
+                        onChange={value => {
+                          field.onChange(value);
+                          setSelectedCountry(value); // Update state
+                          refetch(); // Refetch rooms
+                        }}
                         optionRender={option => (
                           <Space>
                             <span role="img" aria-label={option.data.label}>
@@ -117,6 +123,11 @@ function Home() {
                         style={{ width: '100%' }}
                         placeholder="Select a language"
                         options={options}
+                        onChange={value => {
+                          field.onChange(value);
+                          setSelectedLanguage(value); // Update state
+                          refetch(); // Refetch rooms
+                        }}
                       />
                     )}
                   />
