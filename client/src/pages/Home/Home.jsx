@@ -46,6 +46,7 @@ function Home() {
       message.success('Room Created');
       setIsModalOpen(false);
       reset();
+      refetch();
     },
     onError: error => {
       console.error('Error:', error);
@@ -66,7 +67,13 @@ function Home() {
   const { data, refetch } = useQuery({
     queryKey: ['product_data', selectedCountry, selectedLanguage],
     queryFn: () =>
-      getRooms({ country: selectedCountry, language: selectedLanguage }),
+      getRooms({
+        user_id: '',
+        room_name: '',
+        language: selectedLanguage.length ? selectedLanguage.join(',') : '',
+        country: selectedCountry.length ? selectedCountry.join(',') : '',
+      }),
+    enabled: true,
   });
 
   return (
@@ -84,7 +91,6 @@ function Home() {
                   <Controller
                     name="country"
                     control={control}
-                    defaultValue={['India']}
                     render={({ field }) => (
                       <Select
                         {...field}
@@ -92,6 +98,7 @@ function Home() {
                         style={{ width: '100%' }}
                         placeholder="Select a country"
                         options={options2}
+                        value={selectedCountry}
                         onChange={value => {
                           field.onChange(value);
                           setSelectedCountry(value); // Update state
@@ -105,6 +112,8 @@ function Home() {
                             {option.data.desc}
                           </Space>
                         )}
+                        // ✅ Allows dropdown width to be dynamic
+                        dropdownStyle={{ minWidth: 150 }}
                       />
                     )}
                   />
@@ -115,7 +124,6 @@ function Home() {
                   <Controller
                     name="language"
                     control={control}
-                    defaultValue={['English']}
                     render={({ field }) => (
                       <Select
                         {...field}
@@ -123,11 +131,13 @@ function Home() {
                         style={{ width: '100%' }}
                         placeholder="Select a language"
                         options={options}
+                        value={selectedLanguage}
                         onChange={value => {
                           field.onChange(value);
                           setSelectedLanguage(value); // Update state
                           refetch(); // Refetch rooms
                         }}
+                        dropdownStyle={{ minWidth: 150 }}
                       />
                     )}
                   />
@@ -148,7 +158,8 @@ function Home() {
                     key={index}
                     className="roomCard bg-blue-950 h-[150px] sm:h-[180px] md:h-[200px] text-white flex justify-center items-center"
                   >
-                    <div className="cardImg">{item.title}</div>
+                    <h1>{item.room_name}</h1>
+                    <h3>{item.user_id}</h3>
                   </div>
                 ))}
             </div>

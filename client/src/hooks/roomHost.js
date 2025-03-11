@@ -5,8 +5,8 @@ export const roomHosting = async postData => {
   return response.data;
 };
 
-export const getRooms = async (language, country) => {
-  const response = await getRoomsApi(language, country);
+export const getRooms = async ({ language, country }) => {
+  const response = await getRoomsApi({ language, country });
   return response.data;
 };
 

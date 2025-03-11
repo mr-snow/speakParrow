@@ -12,6 +12,16 @@ const roomSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    country: {
+      type: [String],
+      required: true,
+      default: ['India'],
+    },
+    language: {
+      type: [String],
+      required: true,
+      default: ['English'],
+    },
     role: {
       type: String,
       default: 'USER',

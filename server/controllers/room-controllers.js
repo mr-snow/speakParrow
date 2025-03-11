@@ -6,12 +6,17 @@ const mongoose = require('mongoose');
 
 module.exports.create = async (req, res) => {
   try {
-    const { user_id, room_name } = req.body;
+    const { user_id, room_name, country, language } = req.body;
     const room_ac = await Room.findOne({ room_name: room_name });
     if (room_ac) {
       return res.status(400).json({ message: 'Already exist' });
     }
-    const response = await Room.create({ room_name, user_id });
+    const response = await Room.create({
+      room_name,
+      user_id,
+      language,
+      country,
+    });
     return res.status(201).json(response);
   } catch (e) {
     return res
@@ -37,7 +42,7 @@ module.exports.getRoomById = async (req, res) => {
 
 module.exports.getRooms = async (req, res) => {
   try {
-    const { user_id, room_name, languages, country } = req.query;
+    const { user_id, room_name, language, country } = req.query;
     const customQuery = {};
 
     if (user_id) {
@@ -46,9 +51,9 @@ module.exports.getRooms = async (req, res) => {
     if (room_name) {
       customQuery.room_name = room_name;
     }
-    if (languages) {
-      const lanAr = languages.split(',');
-      customQuery.languages = { $in: lanAr };
+    if (language) {
+      const lanAr = language.split(',');
+      customQuery.language = { $in: lanAr };
     }
     if (country) {
       const coAr = country.split(',');
