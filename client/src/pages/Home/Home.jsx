@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import Input from '../../components/base-layout/input.jsx/Input';
 import { roomHosting, getRooms } from '../../hooks/roomHost';
 import LoadSpinner from '../../components/commonComponents/spinner/spinner';
+import { getCountryCode } from '../../utils/basicFunctions';
 
 const options = [
   { label: 'English', value: 'English' },
@@ -151,17 +152,73 @@ function Home() {
                 Create
               </Button>
             </div>
-            <div className="w-full grid grid-cols-2 pt-5 md:grid-cols-4 gap-2 sm:gap-5 min-h-[70vh]">
-              {data &&
-                data.map((item, index) => (
-                  <div
-                    key={index}
-                    className="roomCard bg-blue-950 h-[150px] sm:h-[180px] md:h-[200px] text-white flex justify-center items-center"
-                  >
-                    <h1>{item.room_name}</h1>
-                    <h3>{item.user_id}</h3>
+
+            <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-4 min-h-[70vh]">
+              {data?.map((item, index) => (
+                <div
+                  key={index}
+                  className="relative bg-gradient-to-br from-[#1e293b] to-[#334155] p-4 rounded-xl shadow-md text-white flex flex-col gap-2 justify-between h-[200px] transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-white/10 overflow-hidden"
+                >
+                  {/* Floating Glow Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent rounded-xl opacity-0 hover:opacity-10 transition duration-300"></div>
+
+                  {/* Room Name */}
+                  <h1 className="text-lg font-bold text-white bg-white/10 px-3 py-1 rounded-md truncate w-full text-center">
+                    {item.room_name}
+                  </h1>
+
+                  {/* User Info */}
+                  <div className="text-gray-300 text-xs flex items-center gap-2 truncate">
+                    <span className="font-semibold text-white">👤 User:</span>
+                    <span className="truncate">{item.user_id}</span>
                   </div>
-                ))}
+
+                  {/* Languages (Highlighted Badges) */}
+                  <div className="text-gray-300 text-xs flex items-center gap-2 overflow-hidden">
+                    <span className="font-semibold text-white">
+                      🌍 Languages:
+                    </span>
+                    <div className="flex flex-wrap gap-1 max-w-full overflow-hidden">
+                      {item.language?.map((lang, i) => (
+                        <span
+                          key={i}
+                          className="bg-blue-600 text-white px-2 py-1 rounded-md text-[10px] font-semibold truncate"
+                        >
+                          {lang}
+                        </span>
+                      )) || <span>N/A</span>}
+                    </div>
+                  </div>
+
+                  {/* Countries with Flags */}
+                  <div className="text-gray-300 text-xs flex items-center gap-2 overflow-hidden">
+                    <span className="font-semibold text-white">
+                      📍 Countries:
+                    </span>
+                    <div className="flex flex-wrap gap-1 max-w-full overflow-hidden">
+                      {item.country?.map((cty, i) => {
+                        // Convert country name to correct flag code
+                        const countryCode = getCountryCode(cty);
+                        return (
+                          <span
+                            key={i}
+                            className="flex items-center gap-1 bg-gray-800 px-2 py-1 rounded-md text-[10px] truncate"
+                          >
+                            {countryCode && (
+                              <img
+                                src={`https://flagcdn.com/w40/${countryCode}.png`}
+                                alt={cty}
+                                className="w-4 h-3 object-cover rounded-sm"
+                              />
+                            )}
+                            {cty}
+                          </span>
+                        );
+                      }) || <span>N/A</span>}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
