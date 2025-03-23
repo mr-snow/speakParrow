@@ -1,6 +1,12 @@
-import { roomHostingApi, getRoomsApi, joinRoomApi } from '../slice/roomSlice';
+import {
+  roomHostingApi,
+  getRoomsApi,
+  joinRoomApi,
+  addMemberApi,
+} from '../slice/roomSlice';
 
 export const roomHosting = async postData => {
+  console.log(postData, 'postData');
   const response = await roomHostingApi(postData);
   return response.data;
 };
@@ -13,4 +19,19 @@ export const getRooms = async ({ language, country }) => {
 export const joinRoom = async roomId => {
   const response = await joinRoomApi(roomId);
   return response.data;
+};
+
+export const addMember = async postData => {
+  try {
+    const response = await addMemberApi(postData);
+
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    } else {
+      throw new Error(response.data?.message || 'Unexpected server response');
+    }
+  } catch (error) {
+    console.error('Error adding member:', error);
+    throw error;
+  }
 };

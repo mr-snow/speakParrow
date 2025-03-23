@@ -6,17 +6,24 @@ const mongoose = require('mongoose');
 
 module.exports.create = async (req, res) => {
   try {
-    const { user_id, room_name, country, language } = req.body;
+    const { user_id, room_name, country, language, member_limit } = req.body;
+
+    // Check if the room already exists
     const room_ac = await Room.findOne({ room_name: room_name });
     if (room_ac) {
-      return res.status(400).json({ message: 'Already exist' });
+      return res.status(400).json({ message: 'Room already exists' });
     }
+
+    // Create the room with member_limit and an empty team_members array
     const response = await Room.create({
       room_name,
       user_id,
       language,
       country,
+      member_limit, // Store the member limit
+      team_members: [], // Initialize team members as an empty array
     });
+
     return res.status(201).json(response);
   } catch (e) {
     return res
@@ -88,6 +95,84 @@ module.exports.updateRoom = async (req, res) => {
     return res
       .status(500)
       .json({ message: error.message, page: 'room-controllers.js' });
+  }
+};
+
+// module.exports.addMember = async (req, res) => {
+//   const { client_id } = req.body;
+//   const user_id = client_id;
+//   console.log(req.params.room_id, 'room_id');
+
+//   try {
+//     let room = await Room.findById(req.params.room_id);
+//     if (!room) return res.status(404).json({ message: 'Room not found' });
+
+//     // Check if the room is already full
+//     if (room.no_of_members >= room.member_limit) {
+//       return res.status(400).json({ message: 'Team is full!' });
+//     }
+
+//     // Check if the user is already in the team
+//     if (room.team_members.includes(user_id)) {
+//       return res.status(400).json({ message: 'User already in the team!' });
+//     }
+
+//     // Add user to the team
+//     room.team_members.push(user_id);
+//     room.no_of_members = room.team_members.length;
+
+//     await room.save();
+
+//     res.json({ message: 'User added to the team!', room });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+
+module.exports.addMember = async (req, res) => {
+  const { member_id } = req.body;
+  const { room_id } = req.params;
+
+  // Validate room_id format
+  if (!mongoose.Types.ObjectId.isValid(room_id)) {
+    return res.status(400).json({ message: 'Invalid room ID format' });
+  }
+
+  if (!member_id) {
+    return res.status(400).json({ message: 'Member ID is required' });
+  }
+
+  try {
+    let room = await Room.findById(room_id);
+    if (!room) {
+      return res.status(404).json({ message: 'Room not found' });
+    }
+    if (room.no_of_members >= room.member_limit) {
+      return res.status(400).json({ message: 'Team is full!' });
+    }
+
+    if (room.team_members.includes(member_id)) {
+      return res.status(400).json({ message: 'User already in the team!' });
+    }
+
+    const updatedRoom = await Room.findByIdAndUpdate(
+      room_id,
+      {
+        $addToSet: { team_members: member_id },
+        $inc: { no_of_members: 1 },
+      },
+      { new: true }
+    );
+
+    res.json({
+      message: 'User successfully added to the team!',
+      room: updatedRoom,
+    });
+  } catch (err) {
+    console.error('Error adding member:', err);
+    res
+      .status(500)
+      .json({ message: 'Internal Server Error', error: err.message });
   }
 };
 

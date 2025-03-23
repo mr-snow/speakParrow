@@ -8,7 +8,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../components/base-layout/input.jsx/Input';
-import { roomHosting, getRooms } from '../../hooks/roomHost';
+import { roomHosting, getRooms, addMember } from '../../hooks/roomHost';
 import LoadSpinner from '../../components/commonComponents/spinner/spinner';
 import { getCountryCode } from '../../utils/basicFunctions';
 
@@ -65,6 +65,27 @@ function Home() {
     });
   };
 
+  // const addToTeam = async room_id => {
+  //   const member_id = localStorage.getItem('client_id'); // Get user from localStorage
+
+  //   if (!member_id) {
+  //     message.error('Please login..!');
+  //     return;
+  //   }
+
+  //   try {
+  //     const res = await axios.patch(
+  //       `http://localhost:5000/room/add-member/${room_id}`,
+  //       { member_id }
+  //     );
+
+  //     message.success('Added.....');
+  //   } catch (err) {
+  //     alert(err.response?.data?.message);
+  //     console.log(err);
+  //   }
+  // };
+
   const { data, refetch } = useQuery({
     queryKey: ['product_data', selectedCountry, selectedLanguage],
     queryFn: () =>
@@ -75,6 +96,34 @@ function Home() {
         country: selectedCountry.length ? selectedCountry.join(',') : '',
       }),
     enabled: true,
+  });
+
+  const addToTeam = room_id => {
+    const member_id = localStorage.getItem('client_id');
+    if (!member_id) {
+      message.error('Please login..!');
+      return;
+    }
+    if (!room_id) {
+      message.error('Room ID is missing!');
+      return;
+    }
+
+    newMemeber({ room_id, member_id });
+  };
+
+  const { mutate: newMemeber } = useMutation({
+    mutationFn: addMember,
+    onSuccess: data => {
+      console.log('Success:', data);
+      message.success(data?.message || 'Successfully joined the team!');
+      refetch();
+    },
+    onError: error => {
+      const errorMessage = error.response?.data?.message || 'Failed to join';
+      message.error(errorMessage);
+      refetch();
+    },
   });
 
   return (
@@ -157,7 +206,8 @@ function Home() {
               {data?.map((item, index) => (
                 <div
                   key={index}
-                  className="relative bg-gradient-to-br from-[#1e293b] to-[#334155] p-4 rounded-xl shadow-md text-white flex flex-col gap-2 justify-between h-[200px] transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-white/10 overflow-hidden"
+                  className="relative bg-gradient-to-br from-[#1e293b] to-[#334155] p-4 rounded-xl shadow-md text-white flex flex-col gap-2 justify-between h-[200px] transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border border-white/10 overflow-hidden cursor-pointer"
+                  onClick={() => addToTeam(item._id)}
                 >
                   {/* Floating Glow Effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent rounded-xl opacity-0 hover:opacity-10 transition duration-300"></div>
@@ -167,13 +217,21 @@ function Home() {
                     {item.room_name}
                   </h1>
 
+                  {/* Team Info */}
+                  <div className="text-gray-300 text-xs flex items-center gap-2 truncate">
+                    <span className="font-semibold text-white">👥 Team:</span>
+                    <span className="truncate">
+                      {item.no_of_members} / {item.member_limit}
+                    </span>
+                  </div>
+
                   {/* User Info */}
                   <div className="text-gray-300 text-xs flex items-center gap-2 truncate">
-                    <span className="font-semibold text-white">👤 User:</span>
+                    <span className="font-semibold text-white">👤 Owner:</span>
                     <span className="truncate">{item.user_id}</span>
                   </div>
 
-                  {/* Languages (Highlighted Badges) */}
+                  {/* Languages */}
                   <div className="text-gray-300 text-xs flex items-center gap-2 overflow-hidden">
                     <span className="font-semibold text-white">
                       🌍 Languages:
@@ -190,31 +248,20 @@ function Home() {
                     </div>
                   </div>
 
-                  {/* Countries with Flags */}
+                  {/* Countries */}
                   <div className="text-gray-300 text-xs flex items-center gap-2 overflow-hidden">
                     <span className="font-semibold text-white">
                       📍 Countries:
                     </span>
                     <div className="flex flex-wrap gap-1 max-w-full overflow-hidden">
-                      {item.country?.map((cty, i) => {
-                        // Convert country name to correct flag code
-                        const countryCode = getCountryCode(cty);
-                        return (
-                          <span
-                            key={i}
-                            className="flex items-center gap-1 bg-gray-800 px-2 py-1 rounded-md text-[10px] truncate"
-                          >
-                            {countryCode && (
-                              <img
-                                src={`https://flagcdn.com/w40/${countryCode}.png`}
-                                alt={cty}
-                                className="w-4 h-3 object-cover rounded-sm"
-                              />
-                            )}
-                            {cty}
-                          </span>
-                        );
-                      }) || <span>N/A</span>}
+                      {item.country?.map((cty, i) => (
+                        <span
+                          key={i}
+                          className="flex items-center gap-1 bg-gray-800 px-2 py-1 rounded-md text-[10px] truncate"
+                        >
+                          {cty}
+                        </span>
+                      )) || <span>N/A</span>}
                     </div>
                   </div>
                 </div>
@@ -281,7 +328,7 @@ function Home() {
                 <Controller
                   name="country"
                   control={control}
-                  defaultValue={['india']} // Ensure default values match options
+                  // defaultValue={['india']}
                   render={({ field }) => (
                     <div className="flex flex-col items-center w-full ">
                       <p className="font-semibold pb-2">Select Country</p>
@@ -313,7 +360,7 @@ function Home() {
                 <Controller
                   name="language"
                   control={control}
-                  defaultValue={['English']}
+                  // defaultValue={['English']}
                   render={({ field }) => (
                     <div className="flex flex-col items-center w-full">
                       <p className="font-semibold pb-2">Select Language</p>
@@ -325,6 +372,23 @@ function Home() {
                         placeholder="Select a language"
                         options={options}
                       />
+                    </div>
+                  )}
+                />
+
+                <Controller
+                  name="member_limit"
+                  control={control}
+                  defaultValue=""
+                  rules={{ required: 'Member limit is required' }}
+                  render={({ field, fieldState }) => (
+                    <div className="flex flex-col items-center ">
+                      <Input label="Member Limit" type="number" {...field} />
+                      {fieldState.error && (
+                        <p className="error text-red-700 w-fit pl-12">
+                          {fieldState.error.message}
+                        </p>
+                      )}
                     </div>
                   )}
                 />
