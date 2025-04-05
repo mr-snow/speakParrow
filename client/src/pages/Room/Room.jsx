@@ -103,7 +103,16 @@ function Room() {
 
         <section id="stream__container" className=" w-full  md:w-3/5 h-screen ">
           <div className=" h-9/10 flex justify-center items-center ">
-            <div className="bg-black w-[95%] h-[95%]">div</div>
+            <div className="bg-black w-[95%] h-[95%]">
+              <div className="bg-red-500">
+                <p>
+                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                  Explicabo voluptatibus eos iste ipsam eveniet voluptatum culpa
+                  nobis, nam earum dolor necessitatibus ipsum vitae non minus
+                  iure quae omnis quod sapiente.
+                </p>
+              </div>
+            </div>
           </div>
           <div class="stream__actions  h-1/10 flex justify-center items-start">
             <div className="stream_actButton  w-fit flex gap-5 ">
