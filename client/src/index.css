@@ -1,0 +1,12 @@
+
+
+/* Hide scrollbar but allow scrolling */
+.customScrollbar {
+  overflow-y: scroll; /* Keeps scrolling functional */
+  scrollbar-width: none; /* Hides scrollbar for Firefox */
+}
+
+/* Hide scrollbar for Webkit browsers (Chrome, Safari, Edge) */
+.customScrollbar::-webkit-scrollbar {
+  display: none;
+}

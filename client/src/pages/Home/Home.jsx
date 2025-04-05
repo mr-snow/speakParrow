@@ -118,6 +118,12 @@ function Home() {
       console.log('Success:', data);
       message.success(data?.message || 'Successfully joined the team!');
       refetch();
+      if (data?.room._id) {
+        const member_id = localStorage.getItem('client_id');
+        navigate('/room', {
+          state: { room_id: data.room._id, member_id: member_id },
+        });
+      }
     },
     onError: error => {
       const errorMessage = error.response?.data?.message || 'Failed to join';
