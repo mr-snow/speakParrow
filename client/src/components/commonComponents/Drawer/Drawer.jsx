@@ -72,9 +72,7 @@ const CustomDrawer = ({ props }) => {
           key: '4',
           label: (
             <div onClick={e => e.stopPropagation()}>
-
-              {/* <button onClick={toggleTheme}>{appTheme}</button> */}
-              <span>Change Theme   </span>
+              <span>Change Theme </span>
               <Switch
                 checked={appTheme === 'dark'}
                 onChange={toggleTheme}

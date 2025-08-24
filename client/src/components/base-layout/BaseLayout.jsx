@@ -1,8 +1,11 @@
 import React from 'react';
 import './base-layout.css';
 import CustomDrawer from '../commonComponents/Drawer/Drawer';
+import { useThemeStore } from '../../store/themestore';
 
 function BaseLayout({ children }) {
+  const { appTheme, toggleTheme } = useThemeStore();
+
   return (
     <div className="w-full min-h-screen bg-white flex flex-col overflow-hidden">
       <div className="fixed top-0 left-0 w-full max-w-full overflow-hidden h-[50px] bg-white flex items-center justify-between  sm:text-lg p-4 z-50 shadow-md cursor-pointer">
@@ -27,7 +30,11 @@ function BaseLayout({ children }) {
 
       <div className="  w-full">{children}</div>
 
-      <div className="h-[50px] bg-white flex items-center justify-center p-4  w-full max-w-full  shadow-[1px_50px_50px_20px_gray]  shadow-gray ">
+      <div
+        className={`h-[50px]  flex items-center ${
+          appTheme == 'dark' ? 'bg-black text-white' : 'bg-white text-black'
+        }  justify-center p-4  w-full max-w-full  shadow-[1px_50px_50px_20px_gray]  shadow-gray `}
+      >
         © SepakParrow 2025
       </div>
     </div>
