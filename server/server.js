@@ -13,11 +13,11 @@ const routes = require('./routes/index');
 app.use('/api/', routes);
 
 
-app.get('/', (req, res) => {
-  return res.status(200).json('Welcome TO HOME');
-});
+// app.get('/', (req, res) => {
+//   return res.status(200).json('Welcome TO HOME');
+// });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(chalk.green.bold(`🚀 Server is running on port ${PORT}...`));
