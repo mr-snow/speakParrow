@@ -135,11 +135,11 @@ function Home() {
   return (
     <BaseLayout>
       <div
-        className="mainDi h-full w-full p-5 box-border"
+        className="mainDi h-full w-full p-4 box-border"
         style={{ marginTop: '50px' }}
       >
         <div className="w-full min-h-[85vh] p-4 box-border">
-          <div className="bg-gray-300 h-full rounded-tl-md rounded-tr-md flex flex-col p-5 box-border">
+          <div className="bg-[var(--color-bg3)] h-full rounded-tl-md rounded-tr-md flex flex-col p-5 box-border">
             <div className="h-auto flex flex-wrap justify-between px-5 gap-5 py-1 rounded-tl-2xl rounded-tr-2xl flex-col sm:flex-row">
               <div className="gap-5 w-fit h-fit flex flex-wrap">
                 <div className="bg-white px-3 py-1 rounded-2xl flex gap-4 w-fit h-fit">

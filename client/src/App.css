@@ -3,6 +3,21 @@
 * {
   margin: 0;
 }
+/* theme root setup */
+:root {
+  --color-bg: #ffffff;
+  --color-text: #000000;
+  --color-hover: #e5e7eb;
+  --color-bg2:#101828;
+  --color-bg3:rgba(24, 240, 240, 0.546);
+}
+[data-theme="dark"] {
+  --color-bg: #000000;
+  --color-text: #ffffff;
+  --color-hover: #294770; 
+  --color-bg2:#101828;
+  --color-bg3:rgba(20, 198, 198, 0.339);
+}
 
 /* Custom Modal Background */
 .custom-modal .ant-modal-content {
