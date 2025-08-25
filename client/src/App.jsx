@@ -6,8 +6,8 @@ import Room from './pages/Room/room';
 
 import { useEffect } from 'react';
 
-
 import { useThemeStore } from './store/themestore';
+import SignupPage from './pages/Signup/SignupPage';
 
 function App() {
   const { appTheme } = useThemeStore();
@@ -17,9 +17,10 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/s" element={<Home />} />
         <Route path="/lobby" element={<Lobby />} />
         <Route path="/room" element={<Room />} />
+        <Route path="/" element={<SignupPage />} />
       </Routes>
     </>
   );
