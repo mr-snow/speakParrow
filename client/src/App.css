@@ -95,3 +95,27 @@
 .custom-spin .ant-spin-blur {
   background: transparent !important;
 }
+
+
+/* in base-layout.css or global.css */
+.custom-form .ant-form-item-label > label {
+  color: black !important;
+  font-weight: 600;
+}
+
+
+.custom-form .custom-submit-btn {
+  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 12px;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+}
+
+.custom-form .custom-submit-btn:hover {
+  background: linear-gradient(90deg, #feb47b, #ff7e5f);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
+}

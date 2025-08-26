@@ -17,10 +17,10 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/s" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/lobby" element={<Lobby />} />
         <Route path="/room" element={<Room />} />
-        <Route path="/" element={<SignupPage />} />
+        <Route path="/signup" element={<SignupPage />} />
       </Routes>
     </>
   );

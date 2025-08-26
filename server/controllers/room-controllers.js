@@ -1,7 +1,9 @@
 const express = require('express');
 const Room = require('../db/models/roomSchema');
-const ROOM = require('../db/models/roomSchema');
+const User = require('../db/models/userSchema');
+
 const router = express.Router();
+
 const mongoose = require('mongoose');
 
 module.exports.create = async (req, res) => {
@@ -35,7 +37,7 @@ module.exports.create = async (req, res) => {
 module.exports.getRoomById = async (req, res) => {
   try {
     const { id } = req.params;
-    const room = await ROOM.findById(id);
+    const room = await Room.findById(id);
     if (!room) {
       return res.status(404).json({ message: 'Room not found' });
     }
@@ -66,7 +68,7 @@ module.exports.getRooms = async (req, res) => {
       const coAr = country.split(',');
       customQuery.country = { $in: coAr };
     }
-    const response = await ROOM.find(customQuery);
+    const response = await Room.find(customQuery);
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json(error);
