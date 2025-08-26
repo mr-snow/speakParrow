@@ -5,7 +5,6 @@ import { userSignUpHook } from '../../hooks/userHook';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-// bg-[url(images/speakParrow-signup.jpg)]
 
 function SignupPage() {
   const navigate = useNavigate();
