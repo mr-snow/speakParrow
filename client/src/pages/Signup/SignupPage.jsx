@@ -1,17 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Checkbox, Form, Input, message } from 'antd';
 import { useMutation } from '@tanstack/react-query';
-import { userSignUpHook } from '../../hooks/userHook';
+import { userLoginHook, userSignUpHook } from '../../hooks/userHook';
 import { useForm, Controller } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function SignupPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const initialMode = location.pathname.includes('signup') ? 'signup' : 'login';
+  const [mode, setMode] = useState(initialMode);
 
   const onFinish = data => {
     console.log('Success:', data);
-    userSignUp(data);
+    if (mode == 'signup') {
+      userSignUp(data);
+    } else {
+      userLogin(data);
+    }
   };
   const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
@@ -20,9 +26,11 @@ function SignupPage() {
   const { control, handleSubmit, reset } = useForm();
 
   const { mutate: userSignUp } = useMutation({
-    queryKey: ['userSignUp'],
+    queryKey: ['user/register'],
     mutationFn: userSignUpHook,
     onSuccess: data => {
+      localStorage.setItem('id', data._id);
+      localStorage.setItem('username', data.username);
       localStorage.setItem('token', data.token);
       message.success('Successfull');
       setTimeout(() => {
@@ -35,18 +43,39 @@ function SignupPage() {
     },
   });
 
+  const { mutate: userLogin } = useMutation({
+    queryKey: ['user/login'],
+    mutationFn: userLoginHook,
+    onSuccess: data => {
+      localStorage.setItem('id', data._id);
+      localStorage.setItem('username', data.username);
+      localStorage.setItem('token', data.token);
+      message.success('Successfull');
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    },
+    onError: error => {
+      console.log(error.response.data.message);
+      message.error(error.response.data.message);
+    },
+  });
+
   return (
     <div className=" bg-[url(images/speakParro-theme1.jpg)]  h-screen flex flex-col justify-center items-center  ">
-      <div className="bg-linear-to-b from-[#d74c02] to-[#ff7505] w-[60%]  sm:w-[50%]  h-[70%] md:w-[40%]  lg:w-[35%] xl:w-[30%]  flex flex-col  justify-center items-center shadow-[4px_4px_8Px_2Px] border-none   rounded-2xl  ">
+      <div className="bg-linear-to-b from-[#d74c02] to-[#ff7505] w-[60%]  sm:w-[50%]  h-flex-auto md:w-[40%]  lg:w-[35%] xl:w-[30%]  flex flex-col  justify-center items-center shadow-[4px_4px_8Px_2Px] border-none   rounded-2xl  ">
         <div className="text-white font-bold h-1/5 w-full rounded-t-2xl flex flex-col justify-center items-center text-xl bg-blue-400">
           <h1 className="text-2xl"> SpeakParro</h1>
 
-          <h5 className="text-sm text-red-400">Sign Up</h5>
+          <h5 className="text-xl text-yellow-400 ">
+            {mode === 'signup' ? 'SignUp' : 'Login'}
+          </h5>
         </div>
+
         <div className=" h-4/5 w-full rounded-b-2xl bg-white flex flex-col items-center ">
-          <div className="bg-blue-100 h-[100%] flex flex-col gap-2 justify-start pt-8  items-center w-full rounded-b-2xl">
+          <div className="bg-blue-200 p-2 h-[100%] flex flex-col gap-2 justify-start pt-8  items-center w-full rounded-b-2xl">
             <Form
-              className=" custom-form  w-[90%] "
+              className=" custom-form  w-[90%]   "
               name="basic"
               labelCol={{ span: 8 }}
               wrapperCol={{ span: 24 }}
@@ -55,34 +84,43 @@ function SignupPage() {
               onFinishFailed={onFinishFailed}
               autoComplete="off"
             >
-              <Controller
-                name="username"
-                control={control}
-                rules={[
-                  { required: true, message: 'Please input your username!' },
-                ]}
-                render={({ field, fieldState }) => (
-                  <Form.Item label="Username" className="w-full">
-                    <Input {...field} />
+              {mode !== 'login' && (
+                <Controller
+                  name="username"
+                  control={control}
+                  disabled={mode == 'login'}
+                  rules={{
+                    required: 'Please input your username!',
+                  }}
+                  render={({ field, fieldState }) => (
+                    <Form.Item
+                      label="Username"
+                      labelCol={{ span: 6 }}
+                      wrapperCol={{ span: 24 }}
+                    >
+                      <Input {...field} />
 
-                    {fieldState.error && (
-                      <p className="error text-red-700  w-fit pl-12">
-                        {fieldState.error.message}
-                      </p>
-                    )}
-                  </Form.Item>
-                )}
-              />
+                      {fieldState.error && (
+                        <p className="error text-red-700  w-fit pl-12">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </Form.Item>
+                  )}
+                />
+              )}
 
               <Controller
                 name="email"
                 control={control}
-                rules={[
-                  { required: true, message: 'Please input your email!' },
-                ]}
+                rules={{ required: 'Please input your email!' }}
                 render={({ field, fieldState }) => (
-                  <Form.Item label="email" className="w-full">
-                    <Input {...field} />
+                  <Form.Item
+                    label="Email"
+                    labelCol={{ span: 6 }}
+                    wrapperCol={{ span: 24 }}
+                  >
+                    <Input {...field} className="w-full" />
 
                     {fieldState.error && (
                       <p className="error text-red-700  w-fit pl-12">
@@ -95,12 +133,26 @@ function SignupPage() {
 
               <Controller
                 name="password"
-                rules={[
-                  { required: true, message: 'Please input your password!' },
-                ]}
+                rules={{
+                  required: 'Please input your password!',
+                  minLength: {
+                    value: 8,
+                    message: 'Password must be at least 8 characters long',
+                  },
+                  pattern: {
+                    value:
+                      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                    message:
+                      'Password must include uppercase, lowercase, number, and special character',
+                  },
+                }}
                 control={control}
                 render={({ field, fieldState }) => (
-                  <Form.Item label="Password" className="w-full">
+                  <Form.Item
+                    label="Password"
+                    labelCol={{ span: 6 }}
+                    wrapperCol={{ span: 24 }}
+                  >
                     <Input.Password className="w-full" {...field} />
                     {fieldState.error && (
                       <p className="error text-red-700  w-fit pl-12">
@@ -110,14 +162,37 @@ function SignupPage() {
                   </Form.Item>
                 )}
               />
-
-              <Form.Item
-                className="w-full"
-                valuePropName="checked"
-                label={null}
-              >
-                <Checkbox>Remember me</Checkbox>
-              </Form.Item>
+              <br />
+              {/* Toggle mode */}
+              <p className="text-center text-sm mt-4">
+                {mode === 'signup' ? (
+                  <>
+                    Already have an account?{' '}
+                    <span
+                      className="text-blue-600 cursor-pointer"
+                      onClick={() => {
+                        setMode('login');
+                        reset();
+                      }}
+                    >
+                      Login
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    Don’t have an account?{' '}
+                    <span
+                      className="text-blue-600 cursor-pointer"
+                      onClick={() => {
+                        setMode('signup');
+                        reset();
+                      }}
+                    >
+                      Sign Up
+                    </span>
+                  </>
+                )}
+              </p>
 
               <Form.Item label={null}>
                 <Button
@@ -125,7 +200,7 @@ function SignupPage() {
                   htmlType="submit"
                   className="custom-submit-btn w-[100px] md:w-[150px]"
                 >
-                  Submit
+                  {mode === 'signup' ? 'Sign Up' : 'Login'}
                 </Button>
               </Form.Item>
             </Form>

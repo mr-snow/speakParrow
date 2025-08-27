@@ -21,6 +21,7 @@ function App() {
         <Route path="/lobby" element={<Lobby />} />
         <Route path="/room" element={<Room />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/login" element={<SignupPage />} />
       </Routes>
     </>
   );

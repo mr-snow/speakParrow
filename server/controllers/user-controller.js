@@ -33,8 +33,33 @@ module.exports.userSignUp = async (req, res) => {
     const token = jwt.sign({ id: email }, process.env.JWT_SECRET_KEY, {
       expiresIn: '1d',
     });
-    console.log('key', process.env.JWT_SECRET_KEY);
     return res.status(201).json({ ...response.toObject(), token });
+  } catch (e) {
+    return res.status(500).json({ message: e.message });
+  }
+};
+
+module.exports.userLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if(!email || !password){
+      throw new Error('Fill the data correctly');
+    }
+
+    const user_ac = await User.findOne({
+      $or: [{ email }, { username: email }],
+    });
+    if (!user_ac) {
+      throw new Error('Invalide email');
+    }
+    const isMatch =await bcrypt.compare(password, user_ac.password);
+    if (!isMatch) {
+      throw new Error('Invalide Password');
+    }
+    const token = jwt.sign({ id: email }, process.env.JWT_SECRET_KEY, {
+      expiresIn: '1d',
+    });
+    return res.status(200).json({ ...user_ac.toObject(), token });
   } catch (e) {
     return res.status(500).json({ message: e.message });
   }

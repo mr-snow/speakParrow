@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useThemeStore } from '../../../store/themestore';
 
 import {
@@ -15,10 +15,12 @@ import {
   ConfigProvider,
   theme as antdTheme,
 } from 'antd';
+import { useNavigate } from 'react-router-dom';
 const { darkAlgorithm, defaultAlgorithm } = antdTheme;
 
 const CustomDrawer = ({ props }) => {
   const [open, setOpen] = useState(false || props.open);
+  const navigate = useNavigate();
 
   const showDrawer = () => {
     setOpen(true);
@@ -126,8 +128,9 @@ const CustomDrawer = ({ props }) => {
               border: '1px solid gray',
               marginBottom: '10px',
             }}
+            onClick={() => navigate('/Login')}
           >
-            Login
+            Login / signUp
             <i class="fa-solid fa-hands"></i>
           </Button>
 
