@@ -1,4 +1,4 @@
-import { userSignUpApi,userLoginApi } from '../slice/userSlice';
+import { userSignUpApi, userLoginApi, userLogoutApi } from '../slice/userSlice';
 
 export const userSignUpHook = async data => {
   const response = await userSignUpApi(data);
@@ -8,5 +8,10 @@ export const userSignUpHook = async data => {
 
 export const userLoginHook = async data => {
   const response = await userLoginApi(data);
+  return response.data;
+};
+
+export const userLogoutHook = async data => {
+  const response = await userLogoutApi(data);
   return response.data;
 };

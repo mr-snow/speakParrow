@@ -14,8 +14,11 @@ import {
   Switch,
   ConfigProvider,
   theme as antdTheme,
+  message,
 } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+import { userLogoutHook } from '../../../hooks/userHook';
 const { darkAlgorithm, defaultAlgorithm } = antdTheme;
 
 const CustomDrawer = ({ props }) => {
@@ -36,6 +39,7 @@ const CustomDrawer = ({ props }) => {
   //   const changeTheme = value => {
   //     setTheme(value ? 'dark' : 'light');
   //   };
+
   const onClick = e => {
     console.log('click ', e);
     setCurrent(e.key);
@@ -87,6 +91,24 @@ const CustomDrawer = ({ props }) => {
       ],
     },
   ];
+
+  const { mutate: userLogout } = useMutation({
+    queryKey: ['user/logout'],
+    mutationFn: userLogoutHook,
+    onSuccess: data => {
+      navigate('/');
+      message.warning('user Logout');
+      ['token', 'id', 'username'].forEach(key => localStorage.removeItem(key));
+      onClose();
+    },
+    onError: error => {
+      message.error(error.message);
+    },
+  });
+
+  const userLogutFn = () => {
+    userLogout();
+  };
 
   return (
     <>
@@ -140,6 +162,7 @@ const CustomDrawer = ({ props }) => {
             style={{
               border: '1px solid gray',
             }}
+            onClick={() => userLogutFn()}
           >
             Logout
             <i class="fa-solid fa-arrow-right-from-bracket"></i>

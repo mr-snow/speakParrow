@@ -42,7 +42,7 @@ module.exports.userSignUp = async (req, res) => {
 module.exports.userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if(!email || !password){
+    if (!email || !password) {
       throw new Error('Fill the data correctly');
     }
 
@@ -52,7 +52,7 @@ module.exports.userLogin = async (req, res) => {
     if (!user_ac) {
       throw new Error('Invalide email');
     }
-    const isMatch =await bcrypt.compare(password, user_ac.password);
+    const isMatch = await bcrypt.compare(password, user_ac.password);
     if (!isMatch) {
       throw new Error('Invalide Password');
     }
@@ -63,4 +63,8 @@ module.exports.userLogin = async (req, res) => {
   } catch (e) {
     return res.status(500).json({ message: e.message });
   }
+};
+
+module.exports.userLogout = async (req, res) => {
+  return res.status(200).json({ message: 'Logout Successful' });
 };

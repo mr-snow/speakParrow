@@ -7,3 +7,7 @@ export const userSignUpApi = postData =>
 
 export const userLoginApi = postData =>
   axios.post(`${BASE_URL}/user/login`, postData);
+
+export const userLogoutApi = postData =>
+  axios.post(`${BASE_URL}/user/logout`, postData);
+
