@@ -9,5 +9,8 @@ export const userLoginApi = postData =>
   axios.post(`${BASE_URL}/user/login`, postData);
 
 export const userLogoutApi = postData =>
-  axios.post(`${BASE_URL}/user/logout`, postData);
-
+  axios.post(`${BASE_URL}/user/logout`, postData, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  });

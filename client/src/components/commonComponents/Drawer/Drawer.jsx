@@ -97,15 +97,14 @@ const CustomDrawer = ({ props }) => {
     mutationFn: userLogoutHook,
     onSuccess: data => {
       navigate('/');
-      message.warning('user Logout');
+      message.success('user Logout');
       ['token', 'id', 'username'].forEach(key => localStorage.removeItem(key));
       onClose();
     },
     onError: error => {
-      message.error(error.message);
+      message.error(error.response.data.message);
     },
   });
-
   const userLogutFn = () => {
     userLogout();
   };

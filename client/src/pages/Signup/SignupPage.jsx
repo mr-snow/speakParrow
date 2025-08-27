@@ -56,7 +56,7 @@ function SignupPage() {
       }, 2000);
     },
     onError: error => {
-      console.log(error.response.data.message);
+      console.log(error.message);
       message.error(error.response.data.message);
     },
   });
@@ -90,7 +90,7 @@ function SignupPage() {
                   control={control}
                   disabled={mode == 'login'}
                   rules={{
-                    required: 'Please input your username!',
+                    required: ' input your username!',
                   }}
                   render={({ field, fieldState }) => (
                     <Form.Item
@@ -98,7 +98,7 @@ function SignupPage() {
                       labelCol={{ span: 6 }}
                       wrapperCol={{ span: 24 }}
                     >
-                      <Input {...field} />
+                      <Input {...field} placeholder=' Enter Username ' />
 
                       {fieldState.error && (
                         <p className="error text-red-700  w-fit pl-12">
@@ -113,14 +113,14 @@ function SignupPage() {
               <Controller
                 name="email"
                 control={control}
-                rules={{ required: 'Please input your email!' }}
+                rules={{ required: ' input your email!' }}
                 render={({ field, fieldState }) => (
                   <Form.Item
                     label="Email"
                     labelCol={{ span: 6 }}
                     wrapperCol={{ span: 24 }}
                   >
-                    <Input {...field} className="w-full" />
+                    <Input {...field} className="w-full" placeholder={mode == 'login' ? ' Enter Email / Username ' : ' Enter Email'} />
 
                     {fieldState.error && (
                       <p className="error text-red-700  w-fit pl-12">
@@ -134,7 +134,7 @@ function SignupPage() {
               <Controller
                 name="password"
                 rules={{
-                  required: 'Please input your password!',
+                  required: ' input your password!',
                   minLength: {
                     value: 8,
                     message: 'Password must be at least 8 characters long',
@@ -153,7 +153,7 @@ function SignupPage() {
                     labelCol={{ span: 6 }}
                     wrapperCol={{ span: 24 }}
                   >
-                    <Input.Password className="w-full" {...field} />
+                    <Input.Password className="w-full" {...field} placeholder=' Enter Password '  />
                     {fieldState.error && (
                       <p className="error text-red-700  w-fit pl-12">
                         {fieldState.error.message}
