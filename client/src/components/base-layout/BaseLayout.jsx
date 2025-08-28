@@ -2,8 +2,10 @@ import React, { useEffect } from 'react';
 import './base-layout.css';
 import CustomDrawer from '../commonComponents/Drawer/Drawer';
 import { useThemeStore } from '../../store/themestore';
+import { useNavigate } from 'react-router-dom';
 
 function BaseLayout({ children }) {
+  const navigate = useNavigate();
   return (
     <div className="w-full min-h-screen bg-white flex flex-col overflow-hidden">
       <div
@@ -27,6 +29,14 @@ function BaseLayout({ children }) {
           >
             {' '}
             Room{' '}
+          </div>
+          <div
+            className="hover:bg-[var(--color-hover)] px-3 py-1 rounded-sm 
+          bg-[var(--color-bg)] text-[var(--color-text)]"
+            onClick={() => navigate('/test')}
+          >
+            {' '}
+            TestPage
           </div>
         </div>
         <div className="   flex items-center justify-center">
