@@ -11,7 +11,6 @@ import { roomHosting, getRooms, addMember } from '../../hooks/roomHost';
 import LoadSpinner from '../../components/commonComponents/spinner/spinner';
 import { getCountryCode } from '../../utils/basicFunctions';
 
-
 const options = [
   { label: 'English', value: 'English' },
   { label: 'Arabic', value: 'Arabic' },
@@ -99,7 +98,7 @@ function Home() {
   });
 
   const addToTeam = room_id => {
-    const member_id = localStorage.getItem('client_id');
+    const member_id = localStorage.getItem('id');
     if (!member_id) {
       message.error('Please login..!');
       return;

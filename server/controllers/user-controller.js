@@ -30,7 +30,8 @@ module.exports.userSignUp = async (req, res) => {
       country,
       language,
     });
-    const token = jwt.sign({ id: email }, process.env.JWT_SECRET_KEY, {
+    console.log('test respose login', response);
+    const token = jwt.sign({ id: response._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: '1d',
     });
     return res.status(201).json({ ...response.toObject(), token });
@@ -56,8 +57,8 @@ module.exports.userLogin = async (req, res) => {
     if (!isMatch) {
       throw new Error('Invalide Password');
     }
-    const token = jwt.sign({ id: email }, process.env.JWT_SECRET_KEY, {
-      expiresIn: '1d',
+    const token = jwt.sign({ id: user_ac._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: '30s',
     });
     return res.status(200).json({ ...user_ac.toObject(), token });
   } catch (e) {

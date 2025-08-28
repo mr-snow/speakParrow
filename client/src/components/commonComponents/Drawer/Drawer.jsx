@@ -19,17 +19,25 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { userLogoutHook } from '../../../hooks/userHook';
+import { authStore } from '../../../store/authStore';
 const { darkAlgorithm, defaultAlgorithm } = antdTheme;
 
 const CustomDrawer = ({ props }) => {
   const [open, setOpen] = useState(false || props.open);
   const navigate = useNavigate();
+  const { isAuthenticated, logout } = authStore();
 
   const showDrawer = () => {
     setOpen(true);
   };
   const onClose = () => {
     setOpen(false);
+  };
+
+  const testFn = () => {
+    console.clear();
+    console.log('test hii');
+    console.log(isAuthenticated());
   };
 
   const { appTheme, toggleTheme } = useThemeStore();
@@ -98,7 +106,7 @@ const CustomDrawer = ({ props }) => {
     onSuccess: data => {
       navigate('/');
       message.success('user Logout');
-      ['token', 'id', 'username'].forEach(key => localStorage.removeItem(key));
+      logout();
       onClose();
     },
     onError: error => {
@@ -141,6 +149,7 @@ const CustomDrawer = ({ props }) => {
 
           <br />
           <br />
+          <Button onClick={() => testFn()}>click</Button>
           <Divider />
           <Button
             type="link"

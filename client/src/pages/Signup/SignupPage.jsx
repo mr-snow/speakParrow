@@ -4,12 +4,14 @@ import { useMutation } from '@tanstack/react-query';
 import { userLoginHook, userSignUpHook } from '../../hooks/userHook';
 import { useForm, Controller } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { authStore } from '../../store/authStore';
 
 function SignupPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const initialMode = location.pathname.includes('signup') ? 'signup' : 'login';
   const [mode, setMode] = useState(initialMode);
+  const { login } = authStore();
 
   const onFinish = data => {
     console.log('Success:', data);
@@ -29,9 +31,10 @@ function SignupPage() {
     queryKey: ['user/register'],
     mutationFn: userSignUpHook,
     onSuccess: data => {
-      localStorage.setItem('id', data._id);
-      localStorage.setItem('username', data.username);
-      localStorage.setItem('token', data.token);
+      login({ user_id: data._id, username: data.username, token: data.token });
+      // localStorage.setItem('id', data._id);
+      // localStorage.setItem('username', data.username);
+      // localStorage.setItem('token', data.token);
       message.success('Successfull');
       setTimeout(() => {
         navigate('/');
@@ -47,9 +50,11 @@ function SignupPage() {
     queryKey: ['user/login'],
     mutationFn: userLoginHook,
     onSuccess: data => {
-      localStorage.setItem('id', data._id);
-      localStorage.setItem('username', data.username);
-      localStorage.setItem('token', data.token);
+      login({ user_id: data._id, username: data.username, token: data.token });
+      // localStorage.setItem('id', data._id);
+      // localStorage.setItem('username', data.username);
+      // localStorage.setItem('token', data.token);
+
       message.success('Successfull');
       setTimeout(() => {
         navigate('/');
@@ -98,7 +103,7 @@ function SignupPage() {
                       labelCol={{ span: 6 }}
                       wrapperCol={{ span: 24 }}
                     >
-                      <Input {...field} placeholder=' Enter Username ' />
+                      <Input {...field} placeholder=" Enter Username " />
 
                       {fieldState.error && (
                         <p className="error text-red-700  w-fit pl-12">
@@ -120,7 +125,15 @@ function SignupPage() {
                     labelCol={{ span: 6 }}
                     wrapperCol={{ span: 24 }}
                   >
-                    <Input {...field} className="w-full" placeholder={mode == 'login' ? ' Enter Email / Username ' : ' Enter Email'} />
+                    <Input
+                      {...field}
+                      className="w-full"
+                      placeholder={
+                        mode == 'login'
+                          ? ' Enter Email / Username '
+                          : ' Enter Email'
+                      }
+                    />
 
                     {fieldState.error && (
                       <p className="error text-red-700  w-fit pl-12">
@@ -153,7 +166,11 @@ function SignupPage() {
                     labelCol={{ span: 6 }}
                     wrapperCol={{ span: 24 }}
                   >
-                    <Input.Password className="w-full" {...field} placeholder=' Enter Password '  />
+                    <Input.Password
+                      className="w-full"
+                      {...field}
+                      placeholder=" Enter Password "
+                    />
                     {fieldState.error && (
                       <p className="error text-red-700  w-fit pl-12">
                         {fieldState.error.message}
