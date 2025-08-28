@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import { useThemeStore } from './store/themestore';
 import SignupPage from './pages/Signup/SignupPage';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
-import TestPage from './components/base-layout/TestPage/TestPage';
+import TestPage from './pages/TestPage/TestPage';
 
 function App() {
   const { appTheme } = useThemeStore();

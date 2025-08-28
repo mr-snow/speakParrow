@@ -58,7 +58,7 @@ module.exports.userLogin = async (req, res) => {
       throw new Error('Invalide Password');
     }
     const token = jwt.sign({ id: user_ac._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: '1d',
+      expiresIn: '20s',
     });
     return res.status(200).json({ ...user_ac.toObject(), token });
   } catch (e) {

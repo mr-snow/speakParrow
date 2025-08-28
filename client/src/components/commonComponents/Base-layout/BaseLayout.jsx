@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './base-layout.css';
-import CustomDrawer from '../commonComponents/Drawer/Drawer';
-import { useThemeStore } from '../../store/themestore';
+import CustomDrawer from '../Drawer/Drawer';
+import { useThemeStore } from '../../../store/themestore';
 import { useNavigate } from 'react-router-dom';
 
 function BaseLayout({ children }) {
