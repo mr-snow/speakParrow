@@ -12,10 +12,10 @@ function Room() {
   const toggleSidebar = () => setIsOpenChat(prev => !prev);
   const toggleSidebar2 = () => setIsOpenChatBox(prev => !prev);
 
-  if (!room_id || !member_id) {
-    navigate('/');
-    return null;
-  }
+  // if (!room_id || !member_id) {
+  //   navigate('/');
+  //   return null;
+  // }
 
   return (
     <div>
