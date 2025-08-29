@@ -19,14 +19,13 @@ function ProtectedRoute({ children }) {
       }
       try {
         const result = await validateToken();
-        setValidToken(result);
-        console.log('Test-auth:', result);
-        setIsValidating(false);
+        setTimeout(() => {
+          setValidToken(result);
+          setIsValidating(false);
+        }, 2000);
       } catch (error) {
         setIsValidating(false);
         message.error(error.message || error);
-      } finally {
-        setIsValidating(false);
       }
     };
     checkAuth();
