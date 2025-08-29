@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import { useThemeStore } from './store/themestore';
 import SignupPage from './pages/Signup/SignupPage';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
-import TestPage from './pages/TestPage/TestPage';
+import ResultPage from './pages/ResultPage/ResultPage';
 
 function App() {
   const { appTheme } = useThemeStore();
@@ -28,8 +28,20 @@ function App() {
           path="/test"
           element={
             <ProtectedRoute>
-              <TestPage />
+              <ResultPage />  
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <ResultPage
+              status="404"
+              title="404"
+              subTitle="Sorry, the page you visited does not exist."
+              backLink={-1}
+              backPage="Back"
+            />
           }
         />
       </Routes>

@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { message, Spin } from 'antd';
 import LoadSpinner from '../commonComponents/spinner/spinner';
 import { Navigate } from 'react-router-dom';
+import ResultPage from '../../pages/ResultPage/ResultPage';
 
 function ProtectedRoute({ children }) {
   const [isValidating, setIsValidating] = useState(true);
@@ -39,7 +40,17 @@ function ProtectedRoute({ children }) {
     );
   }
 
-  return isValidToken ? <>{children}</> : <Navigate to="/login" />;
+  return isValidToken ? (
+    <>{children}</>
+  ) : (
+    <ResultPage
+      status="403"
+      title="403"
+      subTitle="Sorry, you are not authorized to access this page."
+      backLink={'/login'}
+      backPage="Login/SignUp"
+    />
+  );
 }
 
 export default ProtectedRoute;

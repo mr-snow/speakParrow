@@ -1,102 +1,38 @@
-// import React from 'react';
-// import { Spin, Flex } from 'antd';
-
-// const contentStyle = {
-//   padding: 50,
-//   borderRadius: 4,
-// };
-
-// const content = <div style={contentStyle} />;
-
-// const LoadSpinner = () => (
-//   <div className="bg-black w-screen h-screen flex justify-center items-center">
-//      <Spin tip="Loading"  size='large'  className="custom-spin">
-//           {content}
-//         </Spin>
-//   </div>
-// );
-
-// export default LoadSpinner;
-
-// import { Spin } from 'antd';
-
-// const LoadSpinner = ({
-//   type = 'flip',
-//   size = 'large',
-//   tip = 'Loading',
-//   className = 'ss',
-// }) => {
-//   const renderCustomSpinner = () => {
-//     switch (type) {
-//       case 'orbit':
-//         return (
-//           <div className="flex items-center justify-center space-x-1">
-//             <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.32s]"></div>
-//             <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.16s]"></div>
-//             <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
-//           </div>
-//         );
-//       case 'flip':
-//         return (
-//           <div style={{ perspective: '120px' }}>
-//             <div
-//               style={{
-//                 width: '40px',
-//                 height: '40px',
-//                 background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)',
-//                 borderRadius: '8px',
-//                 animation: 'flip 1.5s infinite',
-//               }}
-//             ></div>
-//           </div>
-//         );
-//       default:
-//         return null;
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <Spin
-//         spinning={true}
-//         size={size}
-//         indicator={renderCustomSpinner()}
-//         tip={tip}
-//         className={className}
-//       />
-
-//       {/* Inline CSS for the flip animation */}
-//       <style jsx>{`
-//         @keyframes flip {
-//           0% {
-//             transform: rotateX(0deg) rotateY(0deg)
-//           }
-//           50% {
-//             transform: rotateX(180deg) rotateY(0deg)
-//           }
-//           100% {
-//             transform: rotateX(180deg) rotateY(180deg)
-//           }
-//         }
-//       `}</style>
-//     </div>
-//   );
-// };
-
-// export default LoadSpinner;
-
-import { Spin } from 'antd';
 const LoadSpinner = ({
   type = 'flip',
-  size = 'large',
+  size = 'medium',
   tip = 'Loading..',
   className = '',
 }) => {
+  // Size configuration
+  const sizeConfig = {
+    small: {
+      container: 'w-5 h-5',
+      text: 'text-xs',
+      custom: 20, // pixels for custom spinners
+    },
+    medium: {
+      container: 'w-10 h-10',
+      text: 'text-sm',
+      custom: 40,
+    },
+    large: {
+      container: 'w-16 h-16 ',
+      text: 'text-2xl font-bold ',
+      custom: 64,
+    },
+  };
+
+
+  const currentSize = sizeConfig[size] || sizeConfig.large;
+
   const renderCustomSpinner = () => {
     switch (type) {
       case 'orbit':
         return (
-          <div className="flex items-center justify-center space-x-1">
+          <div
+            className={`flex items-center justify-center space-x-1 ${currentSize.container}`}
+          >
             <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.32s]"></div>
             <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.16s]"></div>
             <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
@@ -104,11 +40,14 @@ const LoadSpinner = ({
         );
       case 'flip':
         return (
-          <div style={{ perspective: '120px' }}>
+          <div
+            style={{ perspective: '120px' }}
+            className={currentSize.container}
+          >
             <div
               style={{
-                width: '40px',
-                height: '40px',
+                width: '100%',
+                height: '100%',
                 background: 'linear-gradient(131deg, #3B82F6, #8B5CF6)',
                 borderRadius: '8px',
                 animation: 'flip 1.5s infinite',
@@ -118,9 +57,11 @@ const LoadSpinner = ({
         );
       case 'parrot':
         return (
-          <div className="flex items-center justify-center">
+          <div
+            className={`flex items-center justify-center ${currentSize.container}`}
+          >
             <div
-              className="w-10 h-10 bg-cover bg-center rounded-md"
+              className="w-full h-full bg-cover bg-center rounded-md "
               style={{
                 backgroundImage: "url('/images/speakParrow.png')",
                 animation: 'parrotFlip 2s infinite',
@@ -128,7 +69,6 @@ const LoadSpinner = ({
             ></div>
           </div>
         );
-
       default:
         return null;
     }
@@ -136,9 +76,11 @@ const LoadSpinner = ({
 
   return (
     <div>
-      <div className={`flex justify-center items-center flex-col ${className}`}>
+      <div className={`flex justify-center items-center flex-col  ${className}`}>
         {renderCustomSpinner()}
-        {tip && <div className="text-sm text-white mt-2">{tip}</div>}
+        {tip && (
+          <div className={`${currentSize.text} text-white mt-2 `}>{tip}</div>
+        )}
       </div>
 
       {/* Inline CSS for the flip animation */}
