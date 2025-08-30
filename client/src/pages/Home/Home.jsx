@@ -17,6 +17,7 @@ const options = [
   { label: 'Arabic', value: 'Arabic' },
   { label: 'Malayalam', value: 'Malayalam' },
   { label: 'Hindi', value: 'Hindi' },
+  { label: 'All', value: 'All' },
 ];
 
 const options2 = [
@@ -24,15 +25,22 @@ const options2 = [
   { label: 'India', value: 'india', emoji: '🇮🇳', desc: 'India (印度)' },
   { label: 'Japan', value: 'japan', emoji: '🇯🇵', desc: 'Japan (日本)' },
   { label: 'Korea', value: 'korea', emoji: '🇰🇷', desc: 'Korea (韩国)' },
+  { label: 'All', value: 'All', emoji: ' ', desc: 'All' },
 ];
 
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  const { control, handleSubmit, reset, setValue, register } = useForm();
+  const { control, handleSubmit, reset, setValue, register } = useForm({
+    defaultValues: {
+      language: ['All'],
+      country: ['All'],
+    },
+  });
 
   const [localLoading, setLocalLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [selectedCountry, setSelectedCountry] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState([]);
@@ -48,21 +56,23 @@ function Home() {
       console.log('Success:', data);
       message.success('Room Created');
       setIsModalOpen(false);
+      setErrorMessage('');
       reset();
       refetch();
     },
     onError: error => {
-      console.error('Error:', error);
+      console.error('Error:', error.response.data.message);
+      setErrorMessage(error.response.data.message || error);
       message.error(error);
       reset();
     },
   });
 
   const onSubmit = async data => {
-    console.log('final_data', data);
     const updateData = { ...data, user_id: user_id };
+    console.log('final_data', updateData);
     setLocalLoading(true); // Set loading to true
-    submitRoom(data, {
+    submitRoom(updateData, {
       onSuccess: () => setLocalLoading(false),
       onError: () => setLocalLoading(false),
     });
@@ -129,13 +139,14 @@ function Home() {
       }
     },
     onError: error => {
-      const errorMessage = error.response?.data?.message || 'Failed to join';
+      setErrorMessage(error.response?.data?.message || 'Failed to join');
       message.error(errorMessage);
       refetch();
     },
   });
 
   const openModal = async () => {
+    setErrorMessage('');
     const response = await validateToken();
     setAuthorized(response);
     return setIsModalOpen(true);
@@ -310,6 +321,12 @@ function Home() {
                   <h2 className="text-center text-xl font-bold pb-5">
                     Hosting Rooms
                   </h2>
+                  {errorMessage && (
+                    <p className="text-red-600 font-semibold">
+                      ! {errorMessage}
+                    </p>
+                  )}
+
                   <Controller
                     name="room_name"
                     control={control}
@@ -331,8 +348,8 @@ function Home() {
                   <Controller
                     name="country"
                     control={control}
-                    // defaultValue={['india']}
-                    render={({ field }) => (
+                    rules={{ required: 'Select at least one option' }}
+                    render={({ field, fieldState }) => (
                       <div className="flex flex-col items-center w-full ">
                         <p className="font-semibold pb-2">Select Country</p>
                         <Select
@@ -355,6 +372,11 @@ function Home() {
                             })
                           )}
                         />
+                        {fieldState.error && (
+                          <p className="error text-red-700  w-fit pl-12">
+                            {fieldState.error.message}
+                          </p>
+                        )}
                       </div>
                     )}
                   />
@@ -363,8 +385,8 @@ function Home() {
                   <Controller
                     name="language"
                     control={control}
-                    // defaultValue={['English']}
-                    render={({ field }) => (
+                    rules={{ required: 'Select at least one option' }}
+                    render={({ field, fieldState }) => (
                       <div className="flex flex-col items-center w-full">
                         <p className="font-semibold pb-2">Select Language</p>
                         <Select
@@ -375,6 +397,11 @@ function Home() {
                           placeholder="Select a language"
                           options={options}
                         />
+                        {fieldState.error && (
+                          <p className="error text-red-700  w-fit pl-12">
+                            {fieldState.error.message}
+                          </p>
+                        )}
                       </div>
                     )}
                   />
@@ -382,8 +409,14 @@ function Home() {
                   <Controller
                     name="member_limit"
                     control={control}
-                    defaultValue=""
-                    rules={{ required: 'Member limit is required' }}
+                    defaultValue="2"
+                    rules={{
+                      required: 'Member limit is required',
+                      min: {
+                        value: 2,
+                        message: 'Member limit must be at least 2',
+                      },
+                    }}
                     render={({ field, fieldState }) => (
                       <div className="flex flex-col items-center ">
                         <Input label="Member Limit" type="number" {...field} />
@@ -396,14 +429,14 @@ function Home() {
                     )}
                   />
 
-                  <div className=" flex justify-center items-center pt-5 custom-submit ">
+                  <div className=" flex justify-end items-center pt-3   ">
                     <Button
                       type="primary"
                       htmlType="submit"
                       className="custom-submit -btn w-[100px] md:w-[150px]"
                     >
                       Submit
-                    </Button>
+                    </Button> <Button onClick={()=>reset()} type='link'>Reset</Button> 
                   </div>
                 </form>
               ) : (

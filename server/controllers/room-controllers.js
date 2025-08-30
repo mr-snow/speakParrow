@@ -9,6 +9,9 @@ const mongoose = require('mongoose');
 module.exports.create = async (req, res) => {
   try {
     const { user_id, room_name, country, language, member_limit } = req.body;
+    if (!user_id) {
+      return res.status(403).json({ message: 'User validation failed !' });
+    }
 
     // Check if the room already exists
     const room_ac = await Room.findOne({ room_name: room_name });
