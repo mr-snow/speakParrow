@@ -13,3 +13,9 @@ createRoot(document.getElementById('root')).render(
     </QueryClientProvider>
   </BrowserRouter>
 );
+
+// 🔹 Remove the static loader from index.html once React is ready
+const startupLoader = document.getElementById('startup-loader');
+if (startupLoader) {
+  startupLoader.remove();
+}

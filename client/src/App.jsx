@@ -7,20 +7,6 @@ import Home from './pages/Home/Home';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import LoadSpinner from './components/commonComponents/spinner/spinner';
 
-// // Lazy load components with proper error handling
-// const lazyWithRetry = (componentImport) => {
-//   return lazy(async () => {
-//     try {
-//       return await componentImport();
-//     } catch (error) {
-//       // Handle chunk loading error gracefully
-//       console.error('Lazy loading error:', error);
-//       // You can redirect to an error page here if needed
-//       throw error;
-//     }
-//   });
-// };
-
 const ResultPage = lazy(() => import('./pages/ResultPage/ResultPage'));
 const SignupPage = lazy(() => import('./pages/Signup/SignupPage'));
 const Lobby = lazy(() => import('./pages/lobby/lobby'));
