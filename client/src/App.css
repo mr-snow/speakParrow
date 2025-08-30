@@ -7,6 +7,7 @@
 :root {
   --color-bg: #ffffff;
   --color-text: #000000;
+  --color-text-bg: #10bc27;
   --color-hover: #e5e7eb;
   --color-bg2: #101828;
   --color-bg3: rgba(24, 240, 240, 0.546);
@@ -15,6 +16,7 @@
 [data-theme='dark'] {
   --color-bg: #000000;
   --color-text: #ffffff;
+  --color-text-bg: #b20d0d;
   --color-hover: #294770;
   --color-bg2: #101828;
   --color-bg3: rgba(20, 198, 198, 0.339);
@@ -23,8 +25,8 @@
 
 /* Custom Modal Background */
 .custom-modal .ant-modal-content {
-  background-color: #001f3f !important; /* Dark Blue */
-  color: white !important;
+  background-color: var(--color-bg) !important; /* Dark Blue */
+  color: var(--color-text) !important;
 }
 
 /* Custom Header */
@@ -47,7 +49,7 @@
 
 /* Customize Close Button */
 .custom-modal .ant-modal-close {
-  color: white !important; /* White Background */
+  color: red !important; /* White Background */
   border-radius: 50%; /* Make it circular */
   padding: 5px;
   width: 30px;
@@ -59,8 +61,8 @@
 
 /* Custom Modal Select Box Background */
 .custom-modal .ant-select-selector {
-  color: white !important;
-  border: 1px solid #005599 !important; /* Optional: Border color */
+  color: var(--color-text) !important;
+  background-color: var(--color-bg) !important;
 }
 
 /* Change Dropdown Menu Background */

@@ -5,11 +5,12 @@ import { Select, Space, Modal, Button, message } from 'antd';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Input from '../../components/commonComponents/Input/Input'
+import Input from '../../components/commonComponents/Input/Input';
 import { roomHosting, getRooms, addMember } from '../../hooks/roomHost';
 import LoadSpinner from '../../components/commonComponents/spinner/spinner';
 import { getCountryCode } from '../../utils/basicFunctions';
 import BaseLayout from '../../components/commonComponents/base-layout/BaseLayout';
+import { authStore } from '../../store/authStore';
 
 const options = [
   { label: 'English', value: 'English' },
@@ -35,9 +36,11 @@ function Home() {
 
   const [selectedCountry, setSelectedCountry] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState([]);
+  const { validateToken, user_id } = authStore();
+  const [authorized, setAuthorized] = useState(false);
 
   const {
-    mutate: submitLogin,
+    mutate: submitRoom,
     isLoading, // Ensure this is correctly used in UI
   } = useMutation({
     mutationFn: roomHosting,
@@ -57,8 +60,9 @@ function Home() {
 
   const onSubmit = async data => {
     console.log('final_data', data);
+    const updateData = { ...data, user_id: user_id };
     setLocalLoading(true); // Set loading to true
-    submitLogin(data, {
+    submitRoom(data, {
       onSuccess: () => setLocalLoading(false),
       onError: () => setLocalLoading(false),
     });
@@ -131,6 +135,12 @@ function Home() {
     },
   });
 
+  const openModal = async () => {
+    const response = await validateToken();
+    setAuthorized(response);
+    return setIsModalOpen(true);
+  };
+
   return (
     <BaseLayout>
       <div
@@ -200,7 +210,7 @@ function Home() {
               </div>
               <Button
                 type="primary"
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => openModal()}
                 className="w-fit"
               >
                 Create
@@ -291,121 +301,117 @@ function Home() {
               id="form__content__wrapper"
               className="flex flex-col justify-center  items-center gap-2"
             >
-              <form id="join-form" onSubmit={handleSubmit(onSubmit)}>
-                <h2 className="text-center text-xl font-bold pb-5">
-                  Hosting Rooms
-                </h2>
-                <Controller
-                  name="room_name"
-                  control={control}
-                  defaultValue=""
-                  rules={{ required: 'Room name is required' }}
-                  render={({ field, fieldState }) => (
-                    <div className="flex  flex-col items-center ">
-                      <Input label="Room Name" {...field} />
-                      {fieldState.error && (
-                        <p className="error text-red-700  w-fit pl-12">
-                          {fieldState.error.message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                />
-
-                <Controller
-                  name="user_id"
-                  control={control}
-                  defaultValue=""
-                  rules={{ required: 'User ID is required' }}
-                  render={({ field, fieldState }) => (
-                    <div className="flex  flex-col items-center ">
-                      <Input label="User ID" {...field} />
-                      {fieldState.error && (
-                        <p className="error text-red-700  w-fit pl-12  ">
-                          {fieldState.error.message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                />
-
-                {/* Country Select */}
-                <Controller
-                  name="country"
-                  control={control}
-                  // defaultValue={['india']}
-                  render={({ field }) => (
-                    <div className="flex flex-col items-center w-full ">
-                      <p className="font-semibold pb-2">Select Country</p>
-                      <Select
-                        {...field}
-                        className="border-2 bg-transparent"
-                        mode="multiple"
-                        style={{ width: '100%' }}
-                        placeholder="Select a country"
-                        options={options2.map(
-                          ({ label, value, emoji, desc }) => ({
-                            label: (
-                              <Space>
-                                <span role="img" aria-label={label}>
-                                  {emoji}
-                                </span>
-                                {desc}
-                              </Space>
-                            ),
-                            value,
-                          })
+              {authorized == true ? (
+                <form
+                  id="join-form"
+                  className="custom-form"
+                  onSubmit={handleSubmit(onSubmit)}
+                >
+                  <h2 className="text-center text-xl font-bold pb-5">
+                    Hosting Rooms
+                  </h2>
+                  <Controller
+                    name="room_name"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: 'Room name is required' }}
+                    render={({ field, fieldState }) => (
+                      <div className="flex  flex-col items-center ">
+                        <Input label="Room Name" {...field} />
+                        {fieldState.error && (
+                          <p className="error text-red-700  w-fit pl-12">
+                            {fieldState.error.message}
+                          </p>
                         )}
-                      />
-                    </div>
-                  )}
-                />
-
-                {/* Language Select */}
-                <Controller
-                  name="language"
-                  control={control}
-                  // defaultValue={['English']}
-                  render={({ field }) => (
-                    <div className="flex flex-col items-center w-full">
-                      <p className="font-semibold pb-2">Select Language</p>
-                      <Select
-                        {...field}
-                        className="border-2"
-                        mode="multiple"
-                        style={{ width: '100%' }}
-                        placeholder="Select a language"
-                        options={options}
-                      />
-                    </div>
-                  )}
-                />
-
-                <Controller
-                  name="member_limit"
-                  control={control}
-                  defaultValue=""
-                  rules={{ required: 'Member limit is required' }}
-                  render={({ field, fieldState }) => (
-                    <div className="flex flex-col items-center ">
-                      <Input label="Member Limit" type="number" {...field} />
-                      {fieldState.error && (
-                        <p className="error text-red-700 w-fit pl-12">
-                          {fieldState.error.message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                />
-
-                <div className=" flex justify-center items-center pt-5 ">
-                  <input
-                    type="submit"
-                    value="Join Room"
-                    className="bg-blue-500 text-white px-4 py-2 rounded w-fit  "
+                      </div>
+                    )}
                   />
+
+                  {/* Country Select */}
+                  <Controller
+                    name="country"
+                    control={control}
+                    // defaultValue={['india']}
+                    render={({ field }) => (
+                      <div className="flex flex-col items-center w-full ">
+                        <p className="font-semibold pb-2">Select Country</p>
+                        <Select
+                          {...field}
+                          className="border-2 bg-transparent"
+                          mode="multiple"
+                          style={{ width: '100%' }}
+                          placeholder="Select a country"
+                          options={options2.map(
+                            ({ label, value, emoji, desc }) => ({
+                              label: (
+                                <Space>
+                                  <span role="img" aria-label={label}>
+                                    {emoji}
+                                  </span>
+                                  {desc}
+                                </Space>
+                              ),
+                              value,
+                            })
+                          )}
+                        />
+                      </div>
+                    )}
+                  />
+
+                  {/* Language Select */}
+                  <Controller
+                    name="language"
+                    control={control}
+                    // defaultValue={['English']}
+                    render={({ field }) => (
+                      <div className="flex flex-col items-center w-full">
+                        <p className="font-semibold pb-2">Select Language</p>
+                        <Select
+                          {...field}
+                          className="border-2"
+                          mode="multiple"
+                          style={{ width: '100%' }}
+                          placeholder="Select a language"
+                          options={options}
+                        />
+                      </div>
+                    )}
+                  />
+
+                  <Controller
+                    name="member_limit"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: 'Member limit is required' }}
+                    render={({ field, fieldState }) => (
+                      <div className="flex flex-col items-center ">
+                        <Input label="Member Limit" type="number" {...field} />
+                        {fieldState.error && (
+                          <p className="error text-red-700 w-fit pl-12">
+                            {fieldState.error.message}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  />
+
+                  <div className=" flex justify-center items-center pt-5 custom-submit ">
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      className="custom-submit -btn w-[100px] md:w-[150px]"
+                    >
+                      Submit
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <div className=" w-full flex justify-center items-center ">
+                  <i className="fa-solid fa-dove fa-beat-fade text-[#fbc604] px-3"></i>
+                  <p>Nice Try , ! Authorization required , Please Login </p>
                 </div>
-              </form>
+              )}
             </div>
           )}
         </Modal>
