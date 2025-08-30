@@ -8,15 +8,17 @@
   --color-bg: #ffffff;
   --color-text: #000000;
   --color-hover: #e5e7eb;
-  --color-bg2:#101828;
-  --color-bg3:rgba(24, 240, 240, 0.546);
+  --color-bg2: #101828;
+  --color-bg3: rgba(24, 240, 240, 0.546);
+  --logo: url('/images/speakParrow.png');
 }
-[data-theme="dark"] {
+[data-theme='dark'] {
   --color-bg: #000000;
   --color-text: #ffffff;
-  --color-hover: #294770; 
-  --color-bg2:#101828;
-  --color-bg3:rgba(20, 198, 198, 0.339);
+  --color-hover: #294770;
+  --color-bg2: #101828;
+  --color-bg3: rgba(20, 198, 198, 0.339);
+  --logo: url('/images/speakParrow.png');
 }
 
 /* Custom Modal Background */
@@ -96,13 +98,11 @@
   background: transparent !important;
 }
 
-
 /* in base-layout.css or global.css */
 .custom-form .ant-form-item-label > label {
   color: black !important;
   font-weight: 600;
 }
-
 
 .custom-form .custom-submit-btn {
   background: linear-gradient(90deg, #ff7e5f, #feb47b);

@@ -3,6 +3,7 @@ import './base-layout.css';
 import CustomDrawer from '../Drawer/Drawer';
 import { useThemeStore } from '../../../store/themestore';
 import { useNavigate } from 'react-router-dom';
+import LoadSpinner from '../spinner/spinner';
 
 function BaseLayout({ children }) {
   const navigate = useNavigate();
@@ -12,26 +13,36 @@ function BaseLayout({ children }) {
         className="fixed top-0 left-0 w-full max-w-full overflow-hidden h-[50px]  flex items-center justify-between  sm:text-lg p-4 z-50 shadow-md cursor-pointer  px-3 py-1 
           bg-[var(--color-bg)] text-[var(--color-text)]"
       >
-        <h1 className="text-lg sm:text-2xl font-bold">
-          Sepak<span className="text-yellow-600">Parrow</span>
-        </h1>
-        <div className="flex gap-5">
+        <div
+          className="   flex justify-center
+         items-center gap-1 "
+        >
+          <h1 className="text-lg sm:text-2xl font-bold">
+            Sepak<span className="text-yellow-600">Parrow</span>
+          </h1>
+
+      <div className="bg-[image:var(--logo)] bg-contain bg-no-repeat   w-[40px] h-[40px] md:w-10 md:h-10 "></div>
+          {/* <LoadSpinner type="parrot" tip="" /> */}
+          
+        </div>
+
+        <div className="flex  gap-1 sm:gap-5 text-sm  sm:text-lg">
           <div
-            className="hover:bg-[var(--color-hover)] px-3 py-1 rounded-sm 
+            className="hover:bg-[var(--color-hover)] px-1 sm:px-3 py-1 rounded-sm 
           bg-[var(--color-bg)] text-[var(--color-text)]"
           >
             {' '}
             Home{' '}
           </div>
           <div
-            className="hover:bg-[var(--color-hover)] px-3 py-1 rounded-sm 
+            className="hover:bg-[var(--color-hover)] px-1 sm:px-3 py-1 rounded-sm 
           bg-[var(--color-bg)] text-[var(--color-text)]"
           >
             {' '}
             Room{' '}
           </div>
           <div
-            className="hover:bg-[var(--color-hover)] px-3 py-1 rounded-sm 
+            className="hover:bg-[var(--color-hover)] px-1 sm:px-3 py-1 rounded-sm 
           bg-[var(--color-bg)] text-[var(--color-text)]"
             onClick={() => navigate('/test')}
           >
@@ -39,7 +50,7 @@ function BaseLayout({ children }) {
             ResultPage
           </div>
         </div>
-        <div className="   flex items-center justify-center">
+        <div className="   flex items-center justify-center ">
           <CustomDrawer
             props={{
               details: 'some',

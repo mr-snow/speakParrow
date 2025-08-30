@@ -119,7 +119,11 @@ const CustomDrawer = ({ props }) => {
 
   return (
     <>
-      <Button type="primary" onClick={showDrawer}>
+      <Button
+        type="primary"
+        onClick={showDrawer}
+        className="w-1/2 h-1/2  sm:h-full sm:w-full"
+      >
         {props.icon ? <i className={props.icon} /> : 'Open '}
       </Button>
       <ConfigProvider

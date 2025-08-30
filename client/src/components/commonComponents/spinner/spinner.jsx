@@ -63,7 +63,7 @@ const LoadSpinner = ({
             <div
               className="w-full h-full bg-cover bg-center rounded-md "
               style={{
-                backgroundImage: "url('/images/speakParrow.png')",
+                backgroundImage:"var(--logo)",
                 animation: 'parrotFlip 2s infinite',
               }}
             ></div>
