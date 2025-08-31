@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 function Room() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { room_id, member_id } = location.state || {};
 
   const [isOpenChat, setIsOpenChat] = useState(false);
   const [isOpenChatBox, setIsOpenChatBox] = useState(false);

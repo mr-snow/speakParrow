@@ -44,7 +44,7 @@ function Home() {
 
   const [selectedCountry, setSelectedCountry] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState([]);
-  const { validateToken, user_id } = authStore();
+  const { validateToken, user_id, setRoomId } = authStore();
   const [authorized, setAuthorized] = useState(false);
 
   const {
@@ -111,17 +111,20 @@ function Home() {
     enabled: true,
   });
 
-  const addToTeam = room_id => {
-    const member_id = localStorage.getItem('id');
-    if (!member_id) {
-      message.error('Please login..!');
-      return;
+  const addToTeam = async room_id => {
+    const member_id = user_id;
+    const response = await validateToken();
+    setAuthorized(response);
+    if (response == true) {
+      if (!member_id) {
+        message.error('Please login..!');
+        return;
+      }
+      if (!room_id) {
+        message.error('Room ID is missing!');
+        return;
+      }
     }
-    if (!room_id) {
-      message.error('Room ID is missing!');
-      return;
-    }
-
     newMemeber({ room_id, member_id });
   };
 
@@ -131,14 +134,14 @@ function Home() {
       console.log('Success:', data);
       message.success(data?.message || 'Successfully joined the team!');
       refetch();
-      if (data?.room._id) {
-        const member_id = localStorage.getItem('client_id');
-        navigate('/room', {
-          state: { room_id: data.room._id, member_id: member_id },
-        });
+      const room_id = data?.room._id;
+      if (room_id) {
+        setRoomId(room_id);
+        navigate('/room');
       }
     },
     onError: error => {
+      console.log(error)
       setErrorMessage(error.response?.data?.message || 'Failed to join');
       message.error(errorMessage);
       refetch();
@@ -436,7 +439,10 @@ function Home() {
                       className="custom-submit -btn w-[100px] md:w-[150px]"
                     >
                       Submit
-                    </Button> <Button onClick={()=>reset()} type='link'>Reset</Button> 
+                    </Button>{' '}
+                    <Button onClick={() => reset()} type="link">
+                      Reset
+                    </Button>
                   </div>
                 </form>
               ) : (

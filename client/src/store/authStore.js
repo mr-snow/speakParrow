@@ -10,6 +10,7 @@ export const authStore = create(
       token: null,
       user_id: null,
       username: null,
+      roomId: null,
       isLoading: false,
 
       login: ({ user_id, username, token }) => {
@@ -17,6 +18,14 @@ export const authStore = create(
       },
       logout: () => {
         set({ user_id: null, username: null, token: null });
+      },
+
+      setRoomId: roomId => {
+        set({ roomId });
+      },
+
+      removeRoomId: () => {
+        set({ roomId: null });
       },
 
       validateToken: async () => {
