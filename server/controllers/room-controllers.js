@@ -147,6 +147,15 @@ module.exports.addMember = async (req, res) => {
     return res.status(400).json({ message: 'Member ID is required' });
   }
 
+  if (!mongoose.Types.ObjectId.isValid(member_id)) {
+    return res.status(400).json({ message: 'Member ID is required' });
+  } else {
+    const user_ac = await User.findById(member_id);
+    if (!user_ac) {
+      return res.status(400).json({ message: 'User not Found !' });
+    }
+  }
+
   try {
     let room = await Room.findById(room_id);
     if (!room) {

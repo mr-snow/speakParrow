@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { authStore } from '../../store/authStore';
 
 function Room() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { roomId, user_id } = authStore();
 
   const [isOpenChat, setIsOpenChat] = useState(false);
   const [isOpenChatBox, setIsOpenChatBox] = useState(false);
@@ -18,9 +20,6 @@ function Room() {
 
   return (
     <div>
-      {/* <h1>Room Page</h1>
-      <p>Room ID: {room_id}</p>
-      <p>Member ID: {member_id}</p> */}
       <div className="roomContainer bg-[#151515] w-full h-full  flex flex-col md:flex-row  ">
         <button
           onClick={toggleSidebar}

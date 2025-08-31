@@ -125,7 +125,7 @@ function Home() {
         return;
       }
     }
-    newMemeber({ room_id, member_id });
+    newMemeber({ room_id, member_id: user_id });
   };
 
   const { mutate: newMemeber } = useMutation({
@@ -141,9 +141,8 @@ function Home() {
       }
     },
     onError: error => {
-      console.log(error)
-      setErrorMessage(error.response?.data?.message || 'Failed to join');
-      message.error(errorMessage);
+      const errMsg = error.response?.data?.message || 'Failed to join';
+      message.error(errMsg);
       refetch();
     },
   });
