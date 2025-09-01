@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { authStore } from '../../store/authStore';
-import { useQuery } from '@tanstack/react-query';
-import { getRoomByIdHook } from '../../hooks/roomHost';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { exitRoomHook, getRoomByIdHook } from '../../hooks/roomHost';
 import { getRoomById } from '../../slice/roomSlice';
 import { message } from 'antd';
 
@@ -18,6 +18,7 @@ function Room() {
 
   const { roomId, user_id } = authStore();
   const [shouldFetch, setShouldFetch] = useState(false);
+  const [exitButton, setExitButton] = useState(false);
 
   const {
     data: roomDetails,
@@ -26,7 +27,6 @@ function Room() {
   } = useQuery({
     queryKey: ['room/details', roomId, user_id],
     queryFn: () => getRoomByIdHook({ room_id: roomId, member_id: user_id }),
-    refetchInterval: 5000,
   });
 
   useEffect(() => {
@@ -37,6 +37,31 @@ function Room() {
       }, 4000);
     }
   }, [isError]);
+
+  useEffect(() => {
+    if (roomDetails && user_id) {
+      setExitButton(true);
+    } else {
+      setExitButton(false);
+    }
+  }, [user_id, roomDetails]);
+
+  const { mutate: exitRoom } = useMutation({
+    queryKey: ['member/exit'],
+    mutationFn: exitRoomHook,
+    onSuccess: data => {
+      console.log(data);
+      message.success('You exit from a room');
+    },
+    onError: error => {
+      message.error(error?.response?.data?.message);
+    },
+  });
+
+  const roomExit = () => {
+    message.info('room Exit clicked');
+    exitRoom({ room_id: roomId, member_id: user_id });
+  };
 
   return (
     <div>
@@ -77,40 +102,28 @@ function Room() {
             id="member__list"
             className="customScrollbar bg-[#323043] text-center h-10/11 w-full "
           >
-            <div
-              class="member__wrapper"
-              className="member__1__wrapper  text-white p-3  h-fit text-left flex gap-2 "
-            >
+            <div className="member__wrapper member__1__wrapper  text-white p-3  h-fit text-left flex gap-2 ">
               <p class="member_name  flex justify-center items-center gap-2">
                 <span class="green__icon bg-green-500 text-xs rounded-full size-3 flex justify-center items-center"></span>
                 Sulammita
               </p>
             </div>
 
-            <div
-              class="member__wrapper"
-              className="member__1__wrapper  text-white p-3  h-fit text-left flex gap-2  items-start "
-            >
+            <div className="member__1__wrapper member__wrapper  text-white p-3  h-fit text-left flex gap-2  items-start ">
               <p class="member_name  flex justify-center items-center gap-2">
                 <span class="green__icon bg-green-500 text-xs rounded-full size-3 flex justify-center items-center"></span>
                 Sulammita
               </p>
             </div>
 
-            <div
-              class="member__wrapper"
-              className="member__1__wrapper  text-white p-3  h-fit text-left flex gap-2 "
-            >
+            <div className="member__1__wrapper member__wrapper  text-white p-3  h-fit text-left flex gap-2 ">
               <p class="member_name  flex justify-center items-center gap-2">
                 <span class="green__icon bg-green-500 text-xs rounded-full size-3 flex justify-center items-center"></span>
                 Sulammita
               </p>
             </div>
 
-            <div
-              class="member__wrapper"
-              className="member__1__wrapper  text-white p-3  h-fit text-left flex gap-2  items-start "
-            >
+            <div className="member__1__wrapper member__wrapper  text-white p-3  h-fit text-left flex gap-2  items-start ">
               <p class="member_name  flex justify-center items-center gap-2">
                 <span class="green__icon bg-green-500 text-xs rounded-full size-3 flex justify-center items-center"></span>
                 Sulammita
@@ -163,17 +176,22 @@ function Room() {
                 </svg>
               </button>
 
-              <button className="bg-red-500 px-3 py-2 rounded-xl hover:scale-110">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  style={{ fill: 'white' }}
+              {exitButton && (
+                <button
+                  className="bg-red-500 px-3 py-2 rounded-xl hover:scale-110"
+                  onClick={roomExit}
                 >
-                  <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z" />
-                </svg>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    style={{ fill: 'white' }}
+                  >
+                    <path d="M16 10v-5l8 7-8 7v-5h-8v-4h8zm-16-8v20h14v-2h-12v-16h12v-2h-14z" />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
         </section>

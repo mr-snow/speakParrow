@@ -8,8 +8,6 @@ module.exports.authenticateToken = (req, res, next) => {
         .status(401)
         .json({ message: 'Access Token requiredd! please Login' });
     }
-
-    console.log(authHeader);
     const token = authHeader.split(' ')[1];
     if (!token) {
       return res

@@ -3,7 +3,8 @@ import {
   getRoomsApi,
   joinRoomApi,
   addMemberApi,
-  getRoomById
+  getRoomById,
+  exitRoomApi,
 } from '../slice/roomSlice';
 
 export const roomHosting = async postData => {
@@ -40,4 +41,9 @@ export const addMember = async postData => {
     console.error('Error adding member:', error);
     throw error;
   }
+};
+
+export const exitRoomHook = async deletData => {
+  const response = await exitRoomApi(deletData);
+  return response.data;
 };

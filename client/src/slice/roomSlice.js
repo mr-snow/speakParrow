@@ -34,6 +34,14 @@ export const getRoomById = async ({ room_id, member_id }) => {
     });
   } catch (error) {
     console.error('getRoomById failed:', error);
-    throw error; // ✅ rethrow so React Query triggers onError
+    throw error;
+  }
+};
+
+export const exitRoomApi = async ({ room_id, member_id }) => {
+  try {
+    return axiosInstance.delete(`room/${room_id}/member/${member_id}`);
+  } catch (error) {
+    throw error;
   }
 };

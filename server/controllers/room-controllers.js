@@ -226,3 +226,19 @@ module.exports.deleteRoom = async (req, res) => {
       .json({ message: error.message, page: 'room-controllers.js' });
   }
 };
+
+module.exports.exitRoom = async (req, res) => {
+  try {
+    const { room_id, member_id } = req.params;
+
+    if (!room_id) {
+      return res.status(404).json({ message: 'Room not Found' });
+    }
+    if (!member_id) {
+      return res.status(404).json({ message: 'Member not Found' });
+    }
+    return res.status(200).json({ message: 'Exist from Room' });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
