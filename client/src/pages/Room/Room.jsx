@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { authStore } from '../../store/authStore';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -63,6 +63,17 @@ function Room() {
     }
   }, [user_id, roomDetails, roomExit]);
 
+  const memberCount = useMemo(() => {
+    return roomDetails
+      ? `${roomDetails?.room?.team_members?.length}/${roomDetails?.room?.no_of_members}`
+      : '0/0';
+  }, [roomDetails]);
+
+
+  const removeMember =(member)=>{
+    console.log('test remove member : ',member)
+  }
+
   return (
     <div>
       <div className="roomContainer bg-[#151515] w-full h-full  flex flex-col md:flex-row  ">
@@ -95,18 +106,19 @@ function Room() {
           >
             <i class="fa-solid fa-users"></i>
             <p>Participants</p>
-            <strong id="members__count">
-              {roomDetails?.team_members?.length}/{roomDetails?.no_of_members}
-            </strong>
+            <strong id="members__count">{memberCount}</strong>
           </div>
 
           <div
             id="member__list"
             className="customScrollbar bg-[#323043] text-center h-10/11 w-full "
           >
-            {roomDetails?.team_members?.length > 0 ? (
+            <div className="text-blue-500 font-bold ">
+              Room host : {roomDetails?.room?.user_id?.username}
+            </div>
+            {roomDetails?.room?.team_members?.length > 0 ? (
               <div>
-                {roomDetails.team_members.map(member => (
+                {roomDetails?.room?.team_members.map(member => (
                   <div className="member__wrapper member__1__wrapper  text-white p-3  h-fit text-left flex gap-2 ">
                     <p class="member_name  flex justify-center items-center gap-2">
                       <span
@@ -114,6 +126,10 @@ function Room() {
                         class="green__icon bg-green-500 text-xs rounded-full size-3 flex justify-center items-center"
                       ></span>
                       {member.username}
+                      {roomDetails?.isOwner && (
+                        <i className="custom-xmark custom-submit-btn  fa-solid fa-circle-xmark text-red-900 bg-amber-300 text-xl  "
+                        onClick={()=>removeMember(member._id)}></i>
+                      )}
                     </p>
                   </div>
                 ))}
@@ -121,9 +137,6 @@ function Room() {
             ) : (
               <p className="text-gray-400">No team members yet</p>
             )}
-            <div className="text-blue-500 font-bold ">
-              room Host :{roomDetails?.user_id?.username}
-            </div>
           </div>
         </section>
 

@@ -56,8 +56,14 @@ module.exports.getRoomById = async (req, res) => {
   try {
     const { id } = req.params;
     const { member_id } = req.query;
+    let isOwner = false;
+    let isTeamMember = false;
+
     if (!id || id === 'null' || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Room is not Available' });
+    }
+    if (member_id && !mongoose.Types.ObjectId.isValid(member_id)) {
+      return res.status(400).json({ message: 'Invalid member ID' });
     }
 
     const room = await Room.findById(id)
@@ -67,7 +73,20 @@ module.exports.getRoomById = async (req, res) => {
       return res.status(404).json({ message: 'Room not found' });
     }
 
-    return res.status(200).json(room);
+    // Check if user is owner (only if member_id is provided and valid)
+    if (member_id && mongoose.Types.ObjectId.isValid(member_id)) {
+      const memberObjectId = new mongoose.Types.ObjectId(member_id);
+
+      // Check if user is the room owner
+      isOwner = room.user_id._id.equals(memberObjectId);
+
+      // Check if user is a team member
+      isTeamMember = room.team_members.some(member =>
+        member._id.equals(memberObjectId)
+      );
+    }
+
+    return res.status(200).json({ room, isTeamMember, isOwner });
   } catch (error) {
     return res
       .status(500)
