@@ -253,7 +253,7 @@ function Home() {
                   {/* User Info */}
                   <div className="text-gray-300 text-xs flex items-center gap-2 truncate">
                     <span className="font-semibold text-white">👤 Owner:</span>
-                    <span className="truncate">{item.user_id}</span>
+                    <span className="truncate">{item?.user_id?.username}</span>
                   </div>
 
                   {/* Languages */}

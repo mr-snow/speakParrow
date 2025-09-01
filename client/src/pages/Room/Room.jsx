@@ -95,59 +95,34 @@ function Room() {
           >
             <i class="fa-solid fa-users"></i>
             <p>Participants</p>
-            <strong id="members__count">27</strong>
+            <strong id="members__count">
+              {roomDetails?.team_members?.length}/{roomDetails?.no_of_members}
+            </strong>
           </div>
 
           <div
             id="member__list"
             className="customScrollbar bg-[#323043] text-center h-10/11 w-full "
           >
-            {/* {roomDetails?.team_memebers?.length > 0 ? (
-              <div>
-                {roomDetails?.team_memebers.map(items => (
-                  <p>live: {items?.username} </p>
-                ))}
-              </div>
-            ) : (
-              <p>no team Members</p>
-            )} */}
-
             {roomDetails?.team_members?.length > 0 ? (
               <div>
                 {roomDetails.team_members.map(member => (
-                  <p key={member._id}>{member.username}</p>
+                  <div className="member__wrapper member__1__wrapper  text-white p-3  h-fit text-left flex gap-2 ">
+                    <p class="member_name  flex justify-center items-center gap-2">
+                      <span
+                        key={member._id}
+                        class="green__icon bg-green-500 text-xs rounded-full size-3 flex justify-center items-center"
+                      ></span>
+                      {member.username}
+                    </p>
+                  </div>
                 ))}
               </div>
             ) : (
               <p className="text-gray-400">No team members yet</p>
             )}
-
-            <div className="member__wrapper member__1__wrapper  text-white p-3  h-fit text-left flex gap-2 ">
-              <p class="member_name  flex justify-center items-center gap-2">
-                <span class="green__icon bg-green-500 text-xs rounded-full size-3 flex justify-center items-center"></span>
-                Sulammita
-              </p>
-            </div>
-
-            <div className="member__1__wrapper member__wrapper  text-white p-3  h-fit text-left flex gap-2  items-start ">
-              <p class="member_name  flex justify-center items-center gap-2">
-                <span class="green__icon bg-green-500 text-xs rounded-full size-3 flex justify-center items-center"></span>
-                Sulammita
-              </p>
-            </div>
-
-            <div className="member__1__wrapper member__wrapper  text-white p-3  h-fit text-left flex gap-2 ">
-              <p class="member_name  flex justify-center items-center gap-2">
-                <span class="green__icon bg-green-500 text-xs rounded-full size-3 flex justify-center items-center"></span>
-                Sulammita
-              </p>
-            </div>
-
-            <div className="member__1__wrapper member__wrapper  text-white p-3  h-fit text-left flex gap-2  items-start ">
-              <p class="member_name  flex justify-center items-center gap-2">
-                <span class="green__icon bg-green-500 text-xs rounded-full size-3 flex justify-center items-center"></span>
-                Sulammita
-              </p>
+            <div className="text-blue-500 font-bold ">
+              room Host :{roomDetails?.user_id?.username}
             </div>
           </div>
         </section>

@@ -60,7 +60,9 @@ module.exports.getRoomById = async (req, res) => {
       return res.status(400).json({ message: 'Room is not Available' });
     }
 
-    const room = await Room.findById(id).populate('team_members', 'username');
+    const room = await Room.findById(id)
+      .populate('team_members', 'username')
+      .populate('user_id', 'username');
     if (!room) {
       return res.status(404).json({ message: 'Room not found' });
     }
@@ -92,7 +94,10 @@ module.exports.getRooms = async (req, res) => {
       const coAr = country.split(',');
       customQuery.country = { $in: coAr };
     }
-    const response = await Room.find(customQuery);
+    const response = await Room.find(customQuery).populate(
+      'user_id',
+      'username'
+    );
     return res.status(200).json(response);
   } catch (error) {
     return res.status(500).json(error);
