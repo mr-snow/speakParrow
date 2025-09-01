@@ -60,12 +60,12 @@ module.exports.getRoomById = async (req, res) => {
       return res.status(400).json({ message: 'Room is not Available' });
     }
 
-    const room = await Room.findById(id);
+    const room = await Room.findById(id).populate('team_members', 'username');
     if (!room) {
       return res.status(404).json({ message: 'Room not found' });
     }
 
-    return res.status(200).json({ room, member_id, error: false });
+    return res.status(200).json(room);
   } catch (error) {
     return res
       .status(500)
@@ -216,7 +216,7 @@ module.exports.exitRoom = async (req, res) => {
       return res.status(404).json({ message: 'Room not Found' });
     }
 
-    if (room.user_id.toString() === member_id) {
+    if (room.user_id === member_id) {
       isOwner = true;
       const deletedRoom = await Room.findOneAndDelete({ _id: room_id });
       return res.status(200).json({
