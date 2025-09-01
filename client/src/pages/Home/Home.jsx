@@ -108,7 +108,6 @@ function Home() {
         language: selectedLanguage.length ? selectedLanguage.join(',') : '',
         country: selectedCountry.length ? selectedCountry.join(',') : '',
       }),
-    enabled: true,
   });
 
   const addToTeam = async room_id => {

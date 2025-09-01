@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { authStore } from '../../store/authStore';
+import { useQuery } from '@tanstack/react-query';
+import { getRoomByIdHook } from '../../hooks/roomHost';
+import { getRoomById } from '../../slice/roomSlice';
+import { message } from 'antd';
 
 function Room() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { roomId, user_id } = authStore();
 
   const [isOpenChat, setIsOpenChat] = useState(false);
   const [isOpenChatBox, setIsOpenChatBox] = useState(false);
@@ -13,10 +16,27 @@ function Room() {
   const toggleSidebar = () => setIsOpenChat(prev => !prev);
   const toggleSidebar2 = () => setIsOpenChatBox(prev => !prev);
 
-  // if (!room_id || !member_id) {
-  //   navigate('/');
-  //   return null;
-  // }
+  const { roomId, user_id } = authStore();
+  const [shouldFetch, setShouldFetch] = useState(false);
+
+  const {
+    data: roomDetails,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['room/details', roomId, user_id],
+    queryFn: () => getRoomByIdHook({ room_id: roomId, member_id: user_id }),
+    refetchInterval: 5000,
+  });
+
+  useEffect(() => {
+    if (isError) {
+      message.error(error?.response?.data?.message);
+      setTimeout(() => {
+        navigate('/');
+      }, 4000);
+    }
+  }, [isError]);
 
   return (
     <div>
@@ -102,14 +122,7 @@ function Room() {
         <section id="stream__container" className=" w-full  md:w-3/5 h-screen ">
           <div className=" h-9/10 flex justify-center items-center ">
             <div className="bg-black w-[95%] h-[95%]">
-              <div className="bg-red-500">
-                <p>
-                  Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                  Explicabo voluptatibus eos iste ipsam eveniet voluptatum culpa
-                  nobis, nam earum dolor necessitatibus ipsum vitae non minus
-                  iure quae omnis quod sapiente.
-                </p>
-              </div>
+              <div className="bg-red-500"></div>
             </div>
           </div>
           <div class="stream__actions  h-1/10 flex justify-center items-start">

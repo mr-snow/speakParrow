@@ -3,6 +3,7 @@ import {
   getRoomsApi,
   joinRoomApi,
   addMemberApi,
+  getRoomById
 } from '../slice/roomSlice';
 
 export const roomHosting = async postData => {
@@ -18,6 +19,11 @@ export const getRooms = async ({ language, country }) => {
 
 export const joinRoom = async roomId => {
   const response = await joinRoomApi(roomId);
+  return response.data;
+};
+
+export const getRoomByIdHook = async ({ room_id, member_id }) => {
+  const response = await getRoomById({ room_id, member_id });
   return response.data;
 };
 

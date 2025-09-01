@@ -37,14 +37,32 @@ module.exports.create = async (req, res) => {
   }
 };
 
+// module.exports.getRoomById = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const room = await Room.findById(id);
+//     if (!room) {
+//       return res.status(404).json({ message: 'Room not found' });
+//     }
+//     return res.status(200).json({ message: room, error: false });
+//   } catch (error) {
+//     return res
+//       .status(500)
+//       .json({ message: error.message, page: 'room-controllers.js' });
+//   }
+// };
+
 module.exports.getRoomById = async (req, res) => {
   try {
     const { id } = req.params;
+    const { member_id } = req.query; // 👈 comes from ?member_id=xxx
+
     const room = await Room.findById(id);
     if (!room) {
       return res.status(404).json({ message: 'Room not found' });
     }
-    return res.status(200).json({ message: room, error: false });
+
+    return res.status(200).json({ room, member_id, error: false });
   } catch (error) {
     return res
       .status(500)
