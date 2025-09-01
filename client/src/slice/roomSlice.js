@@ -19,14 +19,6 @@ export const getRoomsApi = ({ language, country }) => {
 export const joinRoomApi = roomId =>
   axios.post(`${BASE_URL}/room/join/${roomId}`);
 
-// export const getRoomById = async ({ room_id, member_id }) => {
-//   return  await axiosInstance.get(`room/${room_id}`, {
-//     params: {
-//       member_id,
-//     },
-//   })
-// };
-
 export const getRoomById = async ({ room_id, member_id }) => {
   try {
     return await axiosInstance.get(`room/${room_id}`, {

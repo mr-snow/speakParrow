@@ -16,7 +16,7 @@ function Room() {
   const toggleSidebar = () => setIsOpenChat(prev => !prev);
   const toggleSidebar2 = () => setIsOpenChatBox(prev => !prev);
 
-  const { roomId, user_id } = authStore();
+  const { roomId, user_id, removeRoomId } = authStore();
   const [shouldFetch, setShouldFetch] = useState(false);
   const [exitButton, setExitButton] = useState(false);
 
@@ -34,9 +34,26 @@ function Room() {
       message.error(error?.response?.data?.message);
       setTimeout(() => {
         navigate('/');
-      }, 4000);
+      }, 1000);
     }
   }, [isError]);
+
+  const { mutate: exitRoom } = useMutation({
+    mutationFn: exitRoomHook,
+    onSuccess: data => {
+      message.success(data?.message || 'You exit from a room');
+      removeRoomId(roomId);
+      navigate('/');
+    },
+    onError: error => {
+      message.error('Room is Not Available!' || error?.response?.data?.message);
+      navigate('/');
+    },
+  });
+
+  const roomExit = () => {
+    exitRoom({ room_id: roomId, member_id: user_id });
+  };
 
   useEffect(() => {
     if (roomDetails && user_id) {
@@ -44,24 +61,7 @@ function Room() {
     } else {
       setExitButton(false);
     }
-  }, [user_id, roomDetails]);
-
-  const { mutate: exitRoom } = useMutation({
-    queryKey: ['member/exit'],
-    mutationFn: exitRoomHook,
-    onSuccess: data => {
-      console.log(data);
-      message.success('You exit from a room');
-    },
-    onError: error => {
-      message.error(error?.response?.data?.message);
-    },
-  });
-
-  const roomExit = () => {
-    message.info('room Exit clicked');
-    exitRoom({ room_id: roomId, member_id: user_id });
-  };
+  }, [user_id, roomDetails, roomExit]);
 
   return (
     <div>

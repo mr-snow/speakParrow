@@ -55,7 +55,10 @@ module.exports.create = async (req, res) => {
 module.exports.getRoomById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { member_id } = req.query; // 👈 comes from ?member_id=xxx
+    const { member_id } = req.query;
+    if (!id || id === 'null' || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Room is not Available' });
+    }
 
     const room = await Room.findById(id);
     if (!room) {
@@ -121,37 +124,6 @@ module.exports.updateRoom = async (req, res) => {
   }
 };
 
-// module.exports.addMember = async (req, res) => {
-//   const { client_id } = req.body;
-//   const user_id = client_id;
-//   console.log(req.params.room_id, 'room_id');
-
-//   try {
-//     let room = await Room.findById(req.params.room_id);
-//     if (!room) return res.status(404).json({ message: 'Room not found' });
-
-//     // Check if the room is already full
-//     if (room.no_of_members >= room.member_limit) {
-//       return res.status(400).json({ message: 'Team is full!' });
-//     }
-
-//     // Check if the user is already in the team
-//     if (room.team_members.includes(user_id)) {
-//       return res.status(400).json({ message: 'User already in the team!' });
-//     }
-
-//     // Add user to the team
-//     room.team_members.push(user_id);
-//     room.no_of_members = room.team_members.length;
-
-//     await room.save();
-
-//     res.json({ message: 'User added to the team!', room });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
 module.exports.addMember = async (req, res) => {
   const { member_id } = req.body;
   const { room_id } = req.params;
@@ -197,7 +169,7 @@ module.exports.addMember = async (req, res) => {
     );
 
     res.json({
-      message: 'User successfully added to the team!',
+      message: 'Well come To New Room!',
       room: updatedRoom,
     });
   } catch (err) {
@@ -230,14 +202,48 @@ module.exports.deleteRoom = async (req, res) => {
 module.exports.exitRoom = async (req, res) => {
   try {
     const { room_id, member_id } = req.params;
+    let isOwner = false;
+    let isTeamMember = false;
 
-    if (!room_id) {
-      return res.status(404).json({ message: 'Room not Found' });
+    if (!room_id || !mongoose.Types.ObjectId.isValid(room_id)) {
+      return res.status(404).json({ message: 'Room is Not Available' });
     }
     if (!member_id) {
       return res.status(404).json({ message: 'Member not Found' });
     }
-    return res.status(200).json({ message: 'Exist from Room' });
+    const room = await Room.findById(room_id);
+    if (!room) {
+      return res.status(404).json({ message: 'Room not Found' });
+    }
+
+    if (room.user_id.toString() === member_id) {
+      isOwner = true;
+      const deletedRoom = await Room.findOneAndDelete({ _id: room_id });
+      return res.status(200).json({
+        message: 'Room Deleted by Owner ',
+        data: deletedRoom,
+        isOwner,
+        isTeamMember,
+      });
+    }
+    if (room.team_members.includes(member_id)) {
+      isTeamMember = true;
+      const updatedRoom = await Room.findByIdAndUpdate(
+        { _id: room_id },
+        {
+          $pull: {
+            team_members: member_id,
+          },
+          $inc: { no_of_members: -1 },
+        },
+        { new: true }
+      );
+      return res
+        .status(200)
+        .json({ message: 'Member Left from Room', data: updatedRoom });
+    }
+
+    return res.status(404).json({ message: 'Member not part of this room' });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

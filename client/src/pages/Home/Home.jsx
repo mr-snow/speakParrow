@@ -130,8 +130,6 @@ function Home() {
   const { mutate: newMemeber } = useMutation({
     mutationFn: addMember,
     onSuccess: data => {
-      console.log('Success:', data);
-      message.success(data?.message || 'Successfully joined the team!');
       refetch();
       const room_id = data?.room._id;
       if (room_id) {
