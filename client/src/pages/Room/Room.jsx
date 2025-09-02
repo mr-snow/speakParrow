@@ -65,7 +65,7 @@ function Room() {
 
   const memberCount = useMemo(() => {
     return roomDetails
-      ? `${roomDetails?.room?.team_members?.length}/${roomDetails?.room?.no_of_members}`
+      ? `${roomDetails?.room?.team_members?.length}/${roomDetails?.room?.member_limit}`
       : '0/0';
   }, [roomDetails]);
 
@@ -99,6 +99,13 @@ function Room() {
           md:static md:w-1/5 md:block md:overflow-auto
         `}
         >
+          <div className="bg-[var(--color-bg)] text-[var(--color-text)]  h-2/11 flex justify-center items-center flex-col">
+            <h2 className='text-lg sm:text-2xl font-bold'>{roomDetails?.room?.room_name}</h2>
+            <div className="text-sm sm:text-md font-semibold ">
+              Hosted by  {roomDetails?.room?.user_id?.username}<i className="fa-solid fa-wifi px-2"></i>
+            </div>
+          </div>
+
           <div
             id="members__header"
             className="bg-[#262724] w-full h-1/11 text-center text-white flex justify-center items-center gap-2"
@@ -110,11 +117,8 @@ function Room() {
 
           <div
             id="member__list"
-            className="customScrollbar bg-[#323043] text-center h-10/11 w-full "
+            className="customScrollbar bg-[#323043] text-center h-8/11 w-full "
           >
-            <div className="text-blue-500 font-bold ">
-              Room host : {roomDetails?.room?.user_id?.username}
-            </div>
             {roomDetails?.room?.team_members?.length > 0 ? (
               <div>
                 {roomDetails?.room?.team_members.map(member => (

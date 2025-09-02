@@ -77,13 +77,13 @@ module.exports.getRoomById = async (req, res) => {
     if (member_id && mongoose.Types.ObjectId.isValid(member_id)) {
       const memberObjectId = new mongoose.Types.ObjectId(member_id);
 
-      // Check if user is the room owner
-      isOwner = room.user_id._id.equals(memberObjectId);
-
-      // Check if user is a team member
-      isTeamMember = room.team_members.some(member =>
-        member._id.equals(memberObjectId)
-      );
+      if (room.user_id._id.equals(memberObjectId)) {
+        isOwner = true;
+      } else {
+        isTeamMember = room.team_members.some(member =>
+          member._id.equals(memberObjectId)
+        );
+      }
     }
 
     return res.status(200).json({ room, isTeamMember, isOwner });
@@ -240,17 +240,56 @@ module.exports.exitRoom = async (req, res) => {
       return res.status(404).json({ message: 'Room not Found' });
     }
 
-    if (room.user_id === member_id) {
+    const memberObjectId = new mongoose.Types.ObjectId(member_id);
+    if (room.user_id.equals(memberObjectId)) {
       isOwner = true;
-      const deletedRoom = await Room.findOneAndDelete({ _id: room_id });
-      return res.status(200).json({
-        message: 'Room Deleted by Owner ',
-        data: deletedRoom,
-        isOwner,
-        isTeamMember,
-      });
+      const roomAfterRemoval = await Room.findByIdAndUpdate(
+        room_id,
+        {
+          $pull: { team_members: memberObjectId },
+          $inc: {
+            no_of_members: -1,
+          },
+        },
+        { new: true }
+      );
+
+      if (
+        roomAfterRemoval.team_members &&
+        roomAfterRemoval.team_members.length > 0
+      ) {
+        const newOwnerId = roomAfterRemoval.team_members[0];
+
+        const updatedRoom = await Room.findByIdAndUpdate(
+          room_id,
+          {
+            $set: { user_id: newOwnerId },
+          },
+          { new: true }
+        )
+          .populate('user_id', 'username')
+          .populate('team_members', 'username');
+
+        return res.status(200).json({
+          message: 'Owner Left from Room',
+          data: updatedRoom,
+          isOwner,
+          isTeamMember,
+        });
+      } else {
+        const deletedRoom = await Room.findOneAndDelete({ _id: room_id });
+        return res.status(200).json({
+          message: 'Room Deleted by Owner ',
+          data: deletedRoom,
+          isOwner,
+          isTeamMember,
+        });
+      }
     }
-    if (room.team_members.includes(member_id)) {
+    if (
+      room.team_members.some(member => member.equals(memberObjectId)) &&
+      isOwner === false
+    ) {
       isTeamMember = true;
       const updatedRoom = await Room.findByIdAndUpdate(
         { _id: room_id },
@@ -261,12 +300,17 @@ module.exports.exitRoom = async (req, res) => {
           $inc: { no_of_members: -1 },
         },
         { new: true }
-      );
-      return res
-        .status(200)
-        .json({ message: 'Member Left from Room', data: updatedRoom });
-    }
+      )
+        .populate('user_id', 'username')
+        .populate('team_members', 'username');
 
+      return res.status(200).json({
+        message: 'Member Left from Room2',
+        data: updatedRoom,
+        isOwner,
+        isTeamMember,
+      });
+    }
     return res.status(404).json({ message: 'Member not part of this room' });
   } catch (error) {
     return res.status(500).json({ message: error.message });
