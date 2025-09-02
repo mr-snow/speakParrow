@@ -44,7 +44,7 @@ function Home() {
 
   const [selectedCountry, setSelectedCountry] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState([]);
-  const { validateToken, user_id, setRoomId } = authStore();
+  const { validateToken, user_id, setRoomId, roomId } = authStore();
   const [authorized, setAuthorized] = useState(false);
 
   const {
@@ -53,10 +53,13 @@ function Home() {
   } = useMutation({
     mutationFn: roomHosting,
     onSuccess: data => {
-      console.log('Success:', data);
+      if (data.user_id == user_id) {
+        setRoomId(data._id);
+        newMemeber({ room_id: data._id, member_id: user_id });
+      }
       message.success('Room Created');
-      setIsModalOpen(false);
       setErrorMessage('');
+      setIsModalOpen(false);
       reset();
       refetch();
     },

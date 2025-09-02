@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { authStore } from '../../store/authStore';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -69,10 +69,9 @@ function Room() {
       : '0/0';
   }, [roomDetails]);
 
-
-  const removeMember =(member)=>{
-    console.log('test remove member : ',member)
-  }
+  const removeMember = member => {
+    console.log('test remove member : ', member);
+  };
 
   return (
     <div>
@@ -127,8 +126,10 @@ function Room() {
                       ></span>
                       {member.username}
                       {roomDetails?.isOwner && (
-                        <i className="custom-xmark custom-submit-btn  fa-solid fa-circle-xmark text-red-900 bg-amber-300 text-xl  "
-                        onClick={()=>removeMember(member._id)}></i>
+                        <i
+                          className="custom-xmark custom-submit-btn  fa-solid fa-circle-xmark text-red-900 bg-amber-300 text-xl  "
+                          onClick={() => removeMember(member._id)}
+                        ></i>
                       )}
                     </p>
                   </div>
