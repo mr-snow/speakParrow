@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import './Home.css';
 import { Select, Space, Modal, Button, message } from 'antd';
@@ -46,7 +46,7 @@ function Home() {
   const [selectedLanguage, setSelectedLanguage] = useState([]);
   const { validateToken, user_id, setRoomId, roomId } = authStore();
   const [authorized, setAuthorized] = useState(false);
-
+  const roomNameRef = useRef(null);
   const {
     mutate: submitRoom,
     isLoading, // Ensure this is correctly used in UI
@@ -151,7 +151,7 @@ function Home() {
     setErrorMessage('');
     const response = await validateToken();
     setAuthorized(response);
-    return setIsModalOpen(true);
+    setIsModalOpen(true);
   };
 
   return (
@@ -303,6 +303,11 @@ function Home() {
           onOk={() => setIsModalOpen(false)}
           onCancel={() => setIsModalOpen(false)}
           footer={null}
+          afterOpenChange={open => {
+            if (open && roomNameRef.current) {
+              roomNameRef.current.focus();
+            }
+          }}
           className="custom-modal"
         >
           {isLoading || localLoading ? (
@@ -336,7 +341,14 @@ function Home() {
                     rules={{ required: 'Room name is required' }}
                     render={({ field, fieldState }) => (
                       <div className="flex  flex-col items-center ">
-                        <Input label="Room Name" {...field} />
+                        <Input
+                          label="Room Name"
+                          {...field}
+                          ref={el => {
+                            field.ref(el);
+                            roomNameRef.current = el;
+                          }}
+                        />
                         {fieldState.error && (
                           <p className="error text-red-700  w-fit pl-12">
                             {fieldState.error.message}
