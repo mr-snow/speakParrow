@@ -2,7 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { authStore } from '../../store/authStore';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { exitRoomHook, getRoomByIdHook } from '../../hooks/roomHost';
+import {
+  exitRoomHook,
+  getRoomByIdHook,
+  removeMemberHook,
+} from '../../hooks/roomHost';
 import { getRoomById } from '../../slice/roomSlice';
 import { message } from 'antd';
 
@@ -24,6 +28,7 @@ function Room() {
     data: roomDetails,
     isError,
     error,
+    isFetched,
   } = useQuery({
     queryKey: ['room/details', roomId, user_id],
     queryFn: () => getRoomByIdHook({ room_id: roomId, member_id: user_id }),
@@ -55,6 +60,17 @@ function Room() {
     exitRoom({ room_id: roomId, member_id: user_id });
   };
 
+  const { mutate: removeMembers } = useMutation({
+    mutationFn: removeMemberHook,
+    onSuccess: data => {
+      message.success('member Removed By Owner');
+    },
+    onError: error => {
+      message.error(error.message || 'something wrong');
+      console.log('test removeMember:', error);
+    },
+  });
+
   useEffect(() => {
     if (roomDetails && user_id) {
       setExitButton(true);
@@ -70,6 +86,7 @@ function Room() {
   }, [roomDetails]);
 
   const removeMember = member => {
+    removeMembers({ room_id: roomId, member_id: member, owner_id: user_id });
     console.log('test remove member : ', member);
   };
 
@@ -100,9 +117,12 @@ function Room() {
         `}
         >
           <div className="bg-[var(--color-bg)] text-[var(--color-text)]  h-2/11 flex justify-center items-center flex-col">
-            <h2 className='text-lg sm:text-2xl font-bold'>{roomDetails?.room?.room_name}</h2>
+            <h2 className="text-lg sm:text-2xl font-bold">
+              {roomDetails?.room?.room_name}
+            </h2>
             <div className="text-sm sm:text-md font-semibold ">
-              Hosted by  {roomDetails?.room?.user_id?.username}<i className="fa-solid fa-wifi px-2"></i>
+              Hosted by {roomDetails?.room?.user_id?.username}
+              <i className="fa-solid fa-wifi px-2"></i>
             </div>
           </div>
 
@@ -124,10 +144,13 @@ function Room() {
                 {roomDetails?.room?.team_members.map(member => (
                   <div className="member__wrapper member__1__wrapper  text-white p-3  h-fit text-left flex gap-2 ">
                     <p class="member_name  flex justify-center items-center gap-2">
-                      <span
+                      <i
                         key={member._id}
-                        class="green__icon bg-green-500 text-xs rounded-full size-3 flex justify-center items-center"
-                      ></span>
+                        className="px-2 fa-solid fa-user  opacity-95 text-green-600"
+                      >
+                        {' '}
+                      </i>
+
                       {member.username}
                       {roomDetails?.isOwner && (
                         <i
@@ -211,7 +234,6 @@ function Room() {
 
         <section
           id="messages__container"
-          // className=" w-full md:w-1/5 h-screen customScrollbar relative "
           className={`bg-[#323043] 
             fixed top-0 right-0 h-screen  z-40 transition-all duration-300 ease-in-out
             ${isOpenChatBox ? 'w-[300px]' : 'w-0'}

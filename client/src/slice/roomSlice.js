@@ -37,3 +37,15 @@ export const exitRoomApi = async ({ room_id, member_id }) => {
     throw error;
   }
 };
+
+export const removeMemberApi = async ({ room_id, member_id, owner_id }) => {
+  try {
+    return axiosInstance.delete(`room/${room_id}/owner/${owner_id}`, {
+      data: {
+        member_id,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};

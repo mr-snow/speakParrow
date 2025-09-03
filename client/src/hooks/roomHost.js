@@ -5,6 +5,7 @@ import {
   addMemberApi,
   getRoomById,
   exitRoomApi,
+  removeMemberApi,
 } from '../slice/roomSlice';
 
 export const roomHosting = async postData => {
@@ -45,5 +46,10 @@ export const addMember = async postData => {
 
 export const exitRoomHook = async deletData => {
   const response = await exitRoomApi(deletData);
+  return response.data;
+};
+
+export const removeMemberHook = async postData => {
+  const response = await removeMemberApi(postData);
   return response.data;
 };

@@ -316,3 +316,26 @@ module.exports.exitRoom = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+module.exports.removeMember = async (req, res) => {
+  try {
+    const { room_id, owner_id } = req.params;
+    const { member_id } = req.body;
+    if (!room_id || !owner_id || !member_id) {
+      return res.status(404).json({ message: 'Not found ! ' });
+    }
+    const room = await Room.findByIdAndUpdate(
+      room_id,
+      {
+        $pull: { team_members: member_id },
+        $inc: { no_of_members: -1 },
+      },
+      { new: true }
+    );
+    return res
+      .status(200)
+      .json({ message: 'user removed by Owner ', data: room });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
