@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { authStore } from '../../store/authStore';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   exitRoomHook,
   getRoomByIdHook,
@@ -11,6 +11,7 @@ import { getRoomById } from '../../slice/roomSlice';
 import { message } from 'antd';
 
 function Room() {
+  const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -30,7 +31,7 @@ function Room() {
     error,
     isFetched,
   } = useQuery({
-    queryKey: ['room/details', roomId, user_id],
+    queryKey: ['room/details', roomId],
     queryFn: () => getRoomByIdHook({ room_id: roomId, member_id: user_id }),
   });
 
@@ -62,8 +63,9 @@ function Room() {
 
   const { mutate: removeMembers } = useMutation({
     mutationFn: removeMemberHook,
-    onSuccess: data => {
-      message.success('member Removed By Owner');
+    onSuccess: (data, variables) => {
+      message.success('member Removed By Owner', variables);
+      queryClient.invalidateQueries(['room/Details'], roomId);
     },
     onError: error => {
       message.error(error.message || 'something wrong');
@@ -73,11 +75,20 @@ function Room() {
 
   useEffect(() => {
     if (roomDetails && user_id) {
-      setExitButton(true);
+      const isUserStillMember = roomDetails.room.team_members.some(
+        member => member._id === user_id
+      );
+      if (isUserStillMember) {
+        setExitButton(true);
+      } else {
+        message.info('You have been removed from the room by the owner');
+        removeRoomId(roomId);
+        navigate('/');
+      }
     } else {
       setExitButton(false);
     }
-  }, [user_id, roomDetails, roomExit]);
+  }, [user_id, roomDetails, roomExit,removeRoomId,roomId]);
 
   const memberCount = useMemo(() => {
     return roomDetails
