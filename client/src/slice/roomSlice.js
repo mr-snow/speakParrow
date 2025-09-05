@@ -7,8 +7,14 @@ export const roomHostingApi = postData => {
   return axiosInstance.post('room/host', postData);
 };
 
+// export const addMemberApi = ({ room_id, member_id }) => {
+//   return axios.patch(`${BASE_URL}room/add-member/${room_id}`, { member_id });
+// };
+
 export const addMemberApi = ({ room_id, member_id }) => {
-  return axios.patch(`${BASE_URL}room/add-member/${room_id}`, { member_id });
+  return axiosInstance.patch(`${BASE_URL}room/add-member/${room_id}`, {
+    member_id,
+  });
 };
 
 export const getRoomsApi = ({ language, country }) => {

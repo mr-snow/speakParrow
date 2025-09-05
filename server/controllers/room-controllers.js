@@ -7,7 +7,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 module.exports.create = async (req, res) => {
-  const allowedRoles = ['user', 'admin'];
+  const allowedRoles = ['user', 'admin', 'superAdmin'];
   try {
     const { user_id, room_name, country, language, member_limit } = req.body;
     if (!user_id) {
@@ -139,6 +139,7 @@ module.exports.updateRoom = async (req, res) => {
 };
 
 module.exports.addMember = async (req, res) => {
+  allowedRoles = ['user', 'admin', 'superAdmin'];
   const { member_id } = req.body;
   const { room_id } = req.params;
 
@@ -149,6 +150,10 @@ module.exports.addMember = async (req, res) => {
 
   if (!member_id) {
     return res.status(400).json({ message: 'Member ID is required' });
+  }
+
+  if (!allowedRoles.includes(req?.user?.role)) {
+    return res.status(403).json({ message: 'Forbidden: insufficient role' });
   }
 
   if (!mongoose.Types.ObjectId.isValid(member_id)) {

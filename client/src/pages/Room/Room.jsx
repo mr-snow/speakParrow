@@ -88,7 +88,7 @@ function Room() {
     } else {
       setExitButton(false);
     }
-  }, [user_id, roomDetails, roomExit,removeRoomId,roomId]);
+  }, [user_id, roomDetails, roomExit, removeRoomId, roomId]);
 
   const memberCount = useMemo(() => {
     return roomDetails
