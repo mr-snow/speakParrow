@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Checkbox, Form, Input, message } from 'antd';
+import { Button, Checkbox, Form, Input, message, Select } from 'antd';
 import { useMutation } from '@tanstack/react-query';
 import { userLoginHook, userSignUpHook } from '../../hooks/userHook';
 import { useForm, Controller } from 'react-hook-form';
@@ -14,7 +14,7 @@ function SignupPage() {
   const { login } = authStore();
 
   const onFinish = data => {
-    console.log('Success:', data);
+    console.log('test data 2 -- Success:', data);
     if (mode == 'signup') {
       userSignUp(data);
     } else {
@@ -32,9 +32,6 @@ function SignupPage() {
     mutationFn: userSignUpHook,
     onSuccess: data => {
       login({ user_id: data._id, username: data.username, token: data.token });
-      // localStorage.setItem('id', data._id);
-      // localStorage.setItem('username', data.username);
-      // localStorage.setItem('token', data.token);
       message.success('Successfull');
       setTimeout(() => {
         navigate('/');
@@ -179,6 +176,38 @@ function SignupPage() {
                   </Form.Item>
                 )}
               />
+
+              {mode !== 'login' && (
+                <Controller
+                  name="role"
+                  control={control}
+                  render={({ field }) => (
+                    <Form.Item
+                      label="Account"
+                      labelCol={{ span: 6 }}
+                      wrapperCol={{ span: 24 }}
+                    >
+                      <Select
+                        {...field}
+                        style={{ width: '100%', backgroundColor: 'white' }}
+                        placeholder="Select Account Type"
+                        options={[
+                          { label: 'User', value: 'user' },
+                          { label: 'Admin', value: 'admin' },
+                          { label: 'other', value: 'other' },
+                        ]}
+                        onChange={value => {
+                          field.onChange(value);
+                        }}
+                        dropdownStyle={{ minWidth: 150 }}
+                      />
+                    </Form.Item>
+                  )}
+                />
+              )}
+
+              <br />
+
               <br />
               {/* Toggle mode */}
               <p className="text-center text-sm mt-4">

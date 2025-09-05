@@ -7,6 +7,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 module.exports.create = async (req, res) => {
+  const allowedRoles = ['user', 'admin'];
   try {
     const { user_id, room_name, country, language, member_limit } = req.body;
     if (!user_id) {
@@ -17,6 +18,10 @@ module.exports.create = async (req, res) => {
     const room_ac = await Room.findOne({ room_name: room_name });
     if (room_ac) {
       return res.status(400).json({ message: 'Room already exists' });
+    }
+
+    if (!allowedRoles.includes(req?.user?.role)) {
+      return res.status(403).json({ message: 'Forbidden: insufficient role' });
     }
 
     // Create the room with member_limit and an empty team_members array
@@ -36,21 +41,6 @@ module.exports.create = async (req, res) => {
       .json({ message: e.message, page: 'room-controllers.js' });
   }
 };
-
-// module.exports.getRoomById = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const room = await Room.findById(id);
-//     if (!room) {
-//       return res.status(404).json({ message: 'Room not found' });
-//     }
-//     return res.status(200).json({ message: room, error: false });
-//   } catch (error) {
-//     return res
-//       .status(500)
-//       .json({ message: error.message, page: 'room-controllers.js' });
-//   }
-// };
 
 module.exports.getRoomById = async (req, res) => {
   try {

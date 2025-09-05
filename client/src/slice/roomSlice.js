@@ -3,8 +3,9 @@ import axiosInstance from '../utils/axiosInstance';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-export const roomHostingApi = postData =>
-  axios.post(`${BASE_URL}room/host`, postData);
+export const roomHostingApi = postData => {
+  return axiosInstance.post('room/host', postData);
+};
 
 export const addMemberApi = ({ room_id, member_id }) => {
   return axios.patch(`${BASE_URL}room/add-member/${room_id}`, { member_id });

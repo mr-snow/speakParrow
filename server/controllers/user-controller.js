@@ -6,7 +6,14 @@ require('dotenv').config();
 
 module.exports.userSignUp = async (req, res) => {
   try {
-    const { username, email, password, country, language } = req.body;
+    const {
+      username,
+      email,
+      password,
+      country,
+      language,
+      role = 'user',
+    } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user_ac = await User.findOne({
@@ -29,11 +36,16 @@ module.exports.userSignUp = async (req, res) => {
       password: hashedPassword,
       country,
       language,
+      role,
     });
     console.log('test respose login', response);
-    const token = jwt.sign({ id: response._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: '1d',
-    });
+    const token = jwt.sign(
+      { id: response._id, role: response.role },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: '1d',
+      }
+    );
     return res.status(201).json({ ...response.toObject(), token });
   } catch (e) {
     return res.status(500).json({ message: e.message });
@@ -57,9 +69,13 @@ module.exports.userLogin = async (req, res) => {
     if (!isMatch) {
       throw new Error('Invalide Password');
     }
-    const token = jwt.sign({ id: user_ac._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: '1d',
-    });
+    const token = jwt.sign(
+      { id: user_ac._id, role: user_ac.role },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: '1d',
+      }
+    );
     return res.status(200).json({ ...user_ac.toObject(), token });
   } catch (e) {
     return res.status(500).json({ message: e.message });

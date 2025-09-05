@@ -13,7 +13,7 @@ const { authenticateToken } = require('../middleware/authMiddleware');
 
 const router = exprss.Router();
 
-router.post('/host', create);
+router.post('/host',authenticateToken, create);
 router.get('/list', getRooms);
 router.get('/:id', authenticateToken, getRoomById);
 router.patch('/:id', updateRoom);

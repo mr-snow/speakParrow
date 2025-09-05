@@ -6,28 +6,23 @@ module.exports.authenticateToken = (req, res, next) => {
     if (!authHeader) {
       return res
         .status(401)
-        .json({ message: 'Access Token requiredd! please Login' });
+        .json({ message: 'Access Token required! please Login' });
     }
     const token = authHeader.split(' ')[1];
     if (!token) {
       return res
         .status(401)
-        .json({ message: 'Access token required! Plesase Login' });
+        .json({ message: 'Access token required! please  Login' });
     }
 
-    const validate = jwt.verify(
-      token,
-      process.env.JWT_SECRET_KEY,
-      (err, user) => {
-        if (err) {
-          return res
-            .status(403)
-            .json({ message: 'Invalide or  Expired Token' });
-        }
-        req.user = user;
-        next();
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
+      if (err) {
+        return res.status(403).json({ message: 'Invalid or  Expired Token' });
       }
-    );
+      req.user = user;
+      next();
+    });
+    1;
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

@@ -11,7 +11,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   config => {
     const { token } = authStore.getState();
-
+    console.log('test INTERCEPTOR token:', token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -19,5 +19,6 @@ axiosInstance.interceptors.request.use(
   },
   error => Promise.reject(error)
 );
+
 
 export default axiosInstance;
