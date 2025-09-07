@@ -43,15 +43,12 @@ function SignupPage() {
     },
   });
 
+  
   const { mutate: userLogin } = useMutation({
     queryKey: ['user/login'],
     mutationFn: userLoginHook,
     onSuccess: data => {
       login({ user_id: data._id, username: data.username, token: data.token });
-      // localStorage.setItem('id', data._id);
-      // localStorage.setItem('username', data.username);
-      // localStorage.setItem('token', data.token);
-
       message.success('Successfull');
       setTimeout(() => {
         navigate('/');

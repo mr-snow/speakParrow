@@ -7,13 +7,15 @@ export const roomHostingApi = postData => {
   return axiosInstance.post('room/host', postData);
 };
 
-// export const addMemberApi = ({ room_id, member_id }) => {
-//   return axios.patch(`${BASE_URL}room/add-member/${room_id}`, { member_id });
-// };
-
 export const addMemberApi = ({ room_id, member_id }) => {
-  return axiosInstance.patch(`${BASE_URL}room/add-member/${room_id}`, {
+  return axiosInstance.patch(`room/add-member/${room_id}`, {
     member_id,
+  });
+};
+
+export const getRoomById = async ({ room_id, member_id }) => {
+  return await axiosInstance.get(`room/${room_id}`, {
+    params: { member_id },
   });
 };
 
@@ -25,17 +27,6 @@ export const getRoomsApi = ({ language, country }) => {
 
 export const joinRoomApi = roomId =>
   axios.post(`${BASE_URL}/room/join/${roomId}`);
-
-export const getRoomById = async ({ room_id, member_id }) => {
-  try {
-    return await axiosInstance.get(`room/${room_id}`, {
-      params: { member_id },
-    });
-  } catch (error) {
-    console.error('getRoomById failed:', error);
-    throw error;
-  }
-};
 
 export const exitRoomApi = async ({ room_id, member_id }) => {
   try {
