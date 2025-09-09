@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useThemeStore } from '../../../store/themestore';
 
 import {
   AlignLeftOutlined,
@@ -20,9 +19,14 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { userLogoutHook } from '../../../hooks/userHook';
 import { authStore } from '../../../store/authStore';
+
 const { darkAlgorithm, defaultAlgorithm } = antdTheme;
+import { useThemeStore } from '../../../store/themeStore';
+
 
 const CustomDrawer = ({ props }) => {
+    const { appTheme, toggleTheme } = useThemeStore();
+
   const [open, setOpen] = useState(false || props.open);
   const navigate = useNavigate();
   const { isAuthenticated, logout } = authStore();
@@ -40,7 +44,6 @@ const CustomDrawer = ({ props }) => {
     console.log(isAuthenticated());
   };
 
-  const { appTheme, toggleTheme } = useThemeStore();
 
   //   const [theme, setTheme] = useState('dark');
   const [current, setCurrent] = useState('1');

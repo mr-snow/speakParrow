@@ -7,26 +7,12 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 export const authStore = create(
   persist(
     (set, get) => ({
-      token: null,
-      user_id: null,
-      username: null,
-      roomId: null,
-      isLoading: false,
+      token: null,user_id: null,username: null,roomId: null,isLoading: false,
+      login: ({ user_id, username, token }) => {set({ user_id, username, token }); },
+      logout: () => { set({ user_id: null, username: null, token: null, roomId: null }); },
 
-      login: ({ user_id, username, token }) => {
-        set({ user_id, username, token });
-      },
-      logout: () => {
-        set({ user_id: null, username: null, token: null, roomId: null });
-      },
-
-      setRoomId: roomId => {
-        set({ roomId });
-      },
-
-      removeRoomId: () => {
-        set({ roomId: null });
-      },
+      setRoomId: roomId => {set({ roomId }); },
+      removeRoomId: () => {set({ roomId: null });},
 
       validateToken: async () => {
         const token = get().token;

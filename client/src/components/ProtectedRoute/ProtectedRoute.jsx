@@ -1,11 +1,11 @@
 import React from 'react';
-import { authStore } from '../../store/authStore';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { message, Spin } from 'antd';
 import LoadSpinner from '../commonComponents/spinner/spinner';
 import { Navigate } from 'react-router-dom';
 import ResultPage from '../../pages/ResultPage/ResultPage';
+import { authStore } from '../../store/authStore';
 
 function ProtectedRoute({ children }) {
   const [isValidating, setIsValidating] = useState(true);
@@ -35,8 +35,7 @@ function ProtectedRoute({ children }) {
   if (isValidating) {
     return (
       <div className="bg-black flex justify-center items-center h-screen">
-        <LoadSpinner type="parrot" />;
-      </div>
+        <LoadSpinner type="parrot" />   </div>
     );
   }
 

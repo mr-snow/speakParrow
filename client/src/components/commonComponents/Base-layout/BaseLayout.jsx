@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './base-layout.css';
 import CustomDrawer from '../Drawer/Drawer';
-import { useThemeStore } from '../../../store/themestore';
+import { useThemeStore } from '../../../store/themeStore';
 import { useNavigate } from 'react-router-dom';
 import LoadSpinner from '../spinner/spinner';
 
@@ -21,9 +21,8 @@ function BaseLayout({ children }) {
             Sepak<span className="text-yellow-600">Parrow</span>
           </h1>
 
-      <div className="bg-[image:var(--logo)] bg-contain bg-no-repeat   w-[40px] h-[40px] md:w-10 md:h-10 "></div>
+          <div className="bg-[image:var(--logo)] bg-contain bg-no-repeat   w-[40px] h-[40px] md:w-10 md:h-10 "></div>
           {/* <LoadSpinner type="parrot" tip="" /> */}
-          
         </div>
 
         <div className="flex  gap-1 sm:gap-5 text-sm  sm:text-lg">

@@ -1,11 +1,11 @@
-import { Routes, Route } from 'react-router-dom';
 import './App.css';
-import { useThemeStore } from './store/themestore';
 import { lazy, Suspense, useEffect } from 'react';
 
+import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home';
-import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import { useThemeStore } from './store/themeStore';
 import LoadSpinner from './components/commonComponents/spinner/spinner';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 
 const ResultPage = lazy(() => import('./pages/ResultPage/ResultPage'));
 const SignupPage = lazy(() => import('./pages/Signup/SignupPage'));
@@ -29,14 +29,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/lobby" element={<Lobby />} />
-          <Route path="/room" element={<Room />} />
+          <Route path="/test" element={<ResultPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<SignupPage />} />
           <Route
-            path="/test"
+            path="/room"
             element={
               <ProtectedRoute>
-                <ResultPage />
+                <Room />
               </ProtectedRoute>
             }
           />

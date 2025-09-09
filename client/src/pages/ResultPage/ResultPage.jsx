@@ -1,5 +1,4 @@
 import { Button, Divider, Result } from 'antd';
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadSpinner from '../../components/commonComponents/spinner/spinner';
 
@@ -17,7 +16,8 @@ function ResultPage({
   return (
     <>
       <div className="bg-white h-screen w-screen flex justify-center items-center cursor-pointer">
-        <div className=" h-2/3 w-2/3 lg:w-1/2 border-dashed border-0 flex flex-col justify-center items-center ">
+        <div className=" h-2/3 w-2/3 lg:w-1/2 border-dashed border-0 flex flex-col justify-center 
+        items-center ">
           <LoadSpinner
             type="parrot"
             tip="Error"
@@ -29,7 +29,8 @@ function ResultPage({
             <h1 className="text-black font-extrabold text-6xl relative">
               {title}
             </h1>
-            <div className="absolute top-[-20px] text-2xl right-[-20px] w-[30px] h-[30px] flex justify-center items-center">
+            <div className="absolute top-[-20px] text-2xl right-[-20px] w-[30px] h-[30px]
+             flex justify-center items-center">
               {status == 403 ? (
                 <i class="fa-solid fa-lock"></i>
               ) : status == 404 ? (
@@ -66,7 +67,8 @@ function ResultPage({
               >
                 <i className="fa-solid fa-dove text-blue-400 text-3xl"></i>
               </div>
-              <div className="relative bg-amber-300 rounded-[50%] w-[30px] h-[30px] flex justify-center items-center">
+              <div className="relative bg-amber-300 rounded-[50%] w-[30px] h-[30px] flex 
+              justify-center items-center">
                 {status == 403 ? (
                   <i class="fa-solid fa-lock"></i>
                 ) : status == 404 ? (

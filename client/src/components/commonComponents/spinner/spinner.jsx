@@ -82,7 +82,6 @@ const LoadSpinner = ({
           <div className={`${currentSize.text} text-white mt-2 `}>{tip}</div>
         )}
       </div>
-
       {/* Inline CSS for the flip animation */}
       <style jsx>{`
         @keyframes flip {
@@ -111,5 +110,4 @@ const LoadSpinner = ({
     </div>
   );
 };
-
 export default LoadSpinner;
