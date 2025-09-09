@@ -81,26 +81,6 @@ function Home() {
     });
   };
 
-  // const addToTeam = async room_id => {
-  //   const member_id = localStorage.getItem('client_id'); // Get user from localStorage
-
-  //   if (!member_id) {
-  //     message.error('Please login..!');
-  //     return;
-  //   }
-
-  //   try {
-  //     const res = await axios.patch(
-  //       `http://localhost:5000/room/add-member/${room_id}`,
-  //       { member_id }
-  //     );
-
-  //     message.success('Added.....');
-  //   } catch (err) {
-  //     alert(err.response?.data?.message);
-  //     console.log(err);
-  //   }
-  // };
 
   const { data, refetch } = useQuery({
     queryKey: ['product_data', selectedCountry, selectedLanguage],
