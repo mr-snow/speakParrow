@@ -7,3 +7,4 @@ router.get('/validate', authenticateToken, (req, res) => {
 });
 
 module.exports = router;
+

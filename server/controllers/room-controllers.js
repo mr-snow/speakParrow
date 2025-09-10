@@ -1,9 +1,5 @@
-const express = require('express');
 const Room = require('../db/models/roomSchema');
 const User = require('../db/models/userSchema');
-
-const router = express.Router();
-
 const mongoose = require('mongoose');
 
 module.exports.create = async (req, res) => {
@@ -13,25 +9,15 @@ module.exports.create = async (req, res) => {
     if (!user_id) {
       return res.status(403).json({ message: 'User validation failed !' });
     }
-
-    // Check if the room already exists
     const room_ac = await Room.findOne({ room_name: room_name });
     if (room_ac) {
       return res.status(400).json({ message: 'Room already exists' });
     }
-
     if (!allowedRoles.includes(req?.user?.role)) {
       return res.status(403).json({ message: 'Forbidden: insufficient role' });
     }
-
-    // Create the room with member_limit and an empty team_members array
     const response = await Room.create({
-      room_name,
-      user_id,
-      language,
-      country,
-      member_limit, // Store the member limit
-      team_members: [], // Initialize team members as an empty array
+      room_name, user_id, language, country, member_limit,  team_members: [],
     });
 
     return res.status(201).json(response);

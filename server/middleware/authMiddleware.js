@@ -22,7 +22,6 @@ module.exports.authenticateToken = (req, res, next) => {
       req.user = user;
       next();
     });
-    1;
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

@@ -19,3 +19,5 @@ const startupLoader = document.getElementById('startup-loader');
 if (startupLoader) {
   startupLoader.remove();
 }
+
+

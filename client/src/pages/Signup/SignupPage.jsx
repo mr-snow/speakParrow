@@ -3,13 +3,16 @@ import { Button, Checkbox, Form, Input, message, Select } from 'antd';
 import { useMutation } from '@tanstack/react-query';
 import { userLoginHook, userSignUpHook } from '../../hooks/userHook';
 import { useForm, Controller } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { authStore } from '../../store/authStore';
 
+import { useLocation, useNavigate } from 'react-router-dom';
+
 function SignupPage() {
-  const navigate = useNavigate();
   const location = useLocation();
   const initialMode = location.pathname.includes('signup') ? 'signup' : 'login';
+
+  const navigate = useNavigate();
+
   const [mode, setMode] = useState(initialMode);
   const { login } = authStore();
 
@@ -43,7 +46,6 @@ function SignupPage() {
     },
   });
 
-  
   const { mutate: userLogin } = useMutation({
     queryKey: ['user/login'],
     mutationFn: userLoginHook,

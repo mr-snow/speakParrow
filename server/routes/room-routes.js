@@ -1,17 +1,10 @@
-const exprss = require('express');
-const {
-  create,
-  getRoomById,
-  getRooms,
-  deleteRoom,
-  updateRoom,
-  addMember,
-  exitRoom,
-  removeMember,
+const express = require('express');
+const {  create,  getRoomById,  getRooms,  deleteRoom, 
+   updateRoom,  addMember,  exitRoom,  removeMember,
 } = require('../controllers/room-controllers');
 const { authenticateToken } = require('../middleware/authMiddleware');
 
-const router = exprss.Router();
+const router = express.Router();
 
 router.post('/host', authenticateToken, create);
 router.get('/list', getRooms);
@@ -22,3 +15,5 @@ router.patch('/add-member/:room_id', authenticateToken, addMember);
 router.delete('/:room_id/member/:member_id', authenticateToken, exitRoom);
 router.delete('/:room_id/owner/:owner_id', authenticateToken, removeMember);
 module.exports = router;
+
+
