@@ -160,10 +160,6 @@ module.exports.addMember = async (req, res) => {
       return res.status(400).json({ message: 'Team is full!' });
     }
 
-    // if (room.team_members.includes(member_id)) {
-    //   return res.status(400).json({ message: 'User already in the team!' });
-    // }
-
     const updatedRoom = await Room.findByIdAndUpdate(
       room_id,
       {
