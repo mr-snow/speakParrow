@@ -18,7 +18,6 @@
     "json": "^11.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.12.1",
-    "socket.io": "^4.8.1",
     "uniqid": "^5.4.0"
   },
   "devDependencies": {
