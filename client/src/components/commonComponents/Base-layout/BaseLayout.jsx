@@ -46,7 +46,7 @@ function BaseLayout({ children }) {
             onClick={() => navigate('/test')}
           >
             {' '}
-            DemoPage
+            TestPage
           </div>
         </div>
         <div className="   flex items-center justify-center ">
