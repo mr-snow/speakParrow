@@ -3,6 +3,7 @@ import axiosInstance from '../utils/axiosInstance';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
+
 export const roomHostingApi = postData => {
   return axiosInstance.post('room/host', postData);
 };

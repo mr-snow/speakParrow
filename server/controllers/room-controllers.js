@@ -17,7 +17,12 @@ module.exports.create = async (req, res) => {
       return res.status(403).json({ message: 'Forbidden: insufficient role' });
     }
     const response = await Room.create({
-      room_name, user_id, language, country, member_limit,  team_members: [],
+      room_name,
+      user_id,
+      language,
+      country,
+      member_limit,
+      team_members: [],
     });
 
     return res.status(201).json(response);
@@ -309,6 +314,19 @@ module.exports.removeMember = async (req, res) => {
       },
       { new: true }
     );
+    const io = req.app.get('io');
+    if (io) {
+      io.to(room_id).emit('member-removed', {
+        memberId: member_id,
+        removedBy: owner_id,
+      });
+    }
+    if (io) {
+      io.to(member_id).emit('you-were-removed', {
+        roomId: room_id,
+        removedBy: owner_id,
+      });
+    }
     return res
       .status(200)
       .json({ message: 'user removed by Owner ', data: room });
@@ -316,3 +334,5 @@ module.exports.removeMember = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+ 
