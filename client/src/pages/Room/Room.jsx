@@ -9,6 +9,7 @@ import {
 } from '../../hooks/roomHost';
 import { getRoomById } from '../../slice/roomSlice';
 import { message } from 'antd';
+import { useSocket } from '../../contexts/socketContext';
 
 function Room() {
   const queryClient = useQueryClient();
@@ -21,9 +22,12 @@ function Room() {
   const toggleSidebar = () => setIsOpenChat(prev => !prev);
   const toggleSidebar2 = () => setIsOpenChatBox(prev => !prev);
 
-  const { roomId, user_id, removeRoomId } = authStore();
+  const { roomId, user_id, username, removeRoomId } = authStore();
   const [shouldFetch, setShouldFetch] = useState(false);
   const [exitButton, setExitButton] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const socket = useSocket();
+  const [newMessage, setNewMessage] = useState('');
 
   const {
     data: roomDetails,
@@ -43,6 +47,49 @@ function Room() {
       }, 1000);
     }
   }, [isError]);
+
+  useEffect(() => {
+    if (!socket ||  !roomId) return;
+    // Join the room
+    socket.emit('join-room', roomId);
+
+    // Listen for member removal events
+    socket.on('member-removed', data => {
+      message.info(`Member ${data.memberId} was removed from the room`);
+      queryClient.invalidateQueries(['room/details', roomId]);
+    });
+
+    // Listen for when current user is removed
+    socket.on('you-were-removed', data => {
+      message.info('You have been removed from the room by the owner');
+      removeRoomId(roomId);
+      navigate('/');
+    });
+
+    // Listen for new messages
+    socket.on('receive-message', data => {
+      setMessages(prev => [...prev, {
+      message: data.message,
+      username: data.username,
+      timestamp: data.timestamp 
+    }]);
+
+    });
+
+    // Listen for video call signals
+    socket.on('signal', data => {
+      // Handle WebRTC signaling here
+      console.log('Received signal:', data);
+    });
+
+    return () => {
+      socket.emit('leave-room', roomId);
+      socket.off('member-removed');
+      socket.off('you-were-removed');
+      socket.off('receive-message');
+      socket.off('signal');
+    };
+  }, [socket, roomId, user_id, navigate, removeRoomId, queryClient]);
 
   const { mutate: exitRoom } = useMutation({
     mutationFn: exitRoomHook,
@@ -65,6 +112,13 @@ function Room() {
     mutationFn: removeMemberHook,
     onSuccess: (data, variables) => {
       message.success('member Removed By Owner', variables);
+      if (socket) {
+        socket.emit('member-removed', {
+          roomId: roomId,
+          memberId: variables.member_id,
+          removedBy: user_id,
+        });
+      }
       queryClient.invalidateQueries(['room/Details'], roomId);
     },
     onError: error => {
@@ -100,6 +154,27 @@ function Room() {
     removeMembers({ room_id: roomId, member_id: member, owner_id: user_id });
     console.log('test remove member : ', member);
   };
+
+  const handleMessage = e => {
+    e.preventDefault();
+    if (!newMessage.trim() || !socket) return;
+    if (socket) {
+      socket.emit('send-message', {
+        roomId,
+        message: newMessage,
+        username: username || 'Anonymous',
+      });
+      setNewMessage('');
+    }
+  };
+// const [signalData, setSignalData] = useState(null);
+
+// const sendSignal = (signal) => {
+//   if (socket) {
+//     socket.emit('signal', { roomId, signal });
+//   }
+// };
+
 
   return (
     <div>
@@ -268,76 +343,40 @@ function Room() {
                 </div>
               </div>
 
-              <div class="message__wrapper ">
-                <div class="message__body__bot">
-                  <strong class="message__author__bot text-purple-700">
-                    🤖 Mumble Bot
-                  </strong>
-                  <p class="message__text__bot text-white text-sm pl-6">
-                    Welcome to the room, Don't be shy, say hello!
-                  </p>
+              {messages?.map((msg, index) => (
+                <div class="message__wrapper  p-1m " key={index}>
+                  <div class="message__body__bot">
+                    <strong class="message__author__bot text-purple-700">
+                      {msg.username}
+                    </strong>
+                    <p class="message__text__bot bg-[#353739] p-1  text-white text-sm pl-6 rounded-b-md">
+                      {msg.message}
+                    </p>
+                    <span className="message__time text-xs text-gray-400">
+                      {new Date(msg.timestamp).toLocaleTimeString()}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div class="message__wrapper ">
-                <div class="message__body__bot">
-                  <strong class="message__author__bot text-purple-700">
-                    🤖 Mumble Bot
-                  </strong>
-                  <p class="message__text__bot text-white text-sm pl-6">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Dolorem laborum numquam expedita. Blanditiis temporibus sit
-                    eaque quam a! Mollitia id iste deserunt quod blanditiis
-                    itaque nobis cupiditate rem nostrum ducimus!
-                  </p>
-                </div>
-              </div>
-              <div class="message__wrapper ">
-                <div class="message__body__bot">
-                  <strong class="message__author__bot text-purple-700">
-                    🤖 Mumble Bot
-                  </strong>
-                  <p class="message__text__bot text-white text-sm pl-6">
-                    Welcome to the room, Don't be shy, say hello!333333333
-                  </p>
-                </div>
-              </div>
-
-              <div class="message__wrapper ">
-                <div class="message__body__bot">
-                  <strong class="message__author__bot text-purple-700">
-                    🤖 Mumble Bot
-                  </strong>
-                  <p class="message__text__bot text-white text-sm pl-6">
-                    Welcome to the room, Don't be shy, say hello!2222222
-                  </p>
-                </div>
-              </div>
-
-              <div class="message__wrapper ">
-                <div class="message__body__bot">
-                  <strong class="message__author__bot text-purple-700">
-                    🤖 Mumble Bot
-                  </strong>
-                  <p class="message__text__bot text-white text-sm pl-6">
-                    Welcome to the room, Don't be shy, say hello!111111111
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
 
             <div className="bottom-0 absolute w-full md:w-full bg-red-700 h-3/11">
               <form
+                onSubmit={handleMessage}
                 id="message__form"
                 className="p-2 bg-[#272727]  bottom-2 flex flex-col gap-2 items-center md:w-full h-full  "
               >
                 <textarea
                   type="text"
                   name="message"
+                  value={newMessage}
+                  onChange={e => setNewMessage(e.target.value)}
                   placeholder="Send a message..."
                   className="flex-1 px-4 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-400 w-3/4 text-white"
                 />
                 <button
-                  type="submit"
+               
+                  type='submit'
                   className="bg-blue-500 text-white h-[40px] rounded-md hover:bg-blue-600 transition w-1/4"
                 >
                   <i class="fa-solid fa-paper-plane"></i>

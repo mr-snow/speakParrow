@@ -2,11 +2,13 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { authStore } from '../store/authStore';
 import { io } from 'socket.io-client';
 const API_URL = import.meta.env.VITE_API_URL;
-const baseUrl = API_URL.replace('/api/', '');
+// const baseUrl = API_URL.replace('/api/', '');
+const baseUrl = 'http://localhost:3000';
 
 const SocketContext = createContext();
 export const useSocket = () => {
-  return useContext(SocketContext)};
+  return useContext(SocketContext);
+};
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
@@ -16,7 +18,8 @@ export const SocketProvider = ({ children }) => {
     if (user_id) {
       const newSocket = io(baseUrl, {
         query: {
-          userId: user_id,},
+          userId: user_id,
+        },
       });
       setSocket(newSocket);
       return () => newSocket.close();

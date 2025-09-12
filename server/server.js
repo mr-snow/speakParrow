@@ -12,14 +12,15 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.FRONTED_URL || 'http://localhost:5173',
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   },
 });
 
 app.use(cors());
 app.use(express.json());
 const routes = require('./routes/index');
-const { timeStamp } = require('console');
 app.use('/api/', routes);
 
 io.on('connection', socket => {
@@ -41,20 +42,27 @@ io.on('connection', socket => {
     });
   });
   //handle chat message
-  socket.io('send-message', data => {
+  socket.on('send-message', data => {
     socket.to(data.roomId).emit('receive-message', {
       message: data.message,
       username: data.username,
       timeStamp: new Date(),
     });
   });
-  //handle member removal notification
+  // Add the missing event emission for removed users
   socket.on('member-removed', data => {
     socket.to(data.roomId).emit('member-removed', {
       memberId: data.memberId,
       removedBy: data.removedBy,
     });
+
+    // Add this line to notify the specific user
+    socket.to(data.memberId).emit('you-were-removed', {
+      roomId: data.roomId,
+      removedBy: data.removedBy,
+    });
   });
+
   socket.on('disconnect', () => {
     console.log(`User Disconnected`, socket.id);
   });
@@ -64,6 +72,6 @@ app.set('io', io);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(chalk.green.bold(`🚀 Server is running on port ${PORT}...`));
 });
