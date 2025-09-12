@@ -12,6 +12,7 @@ export const authStore = create(
       username: null,
       roomId: null,
       isLoading: false,
+
       login: ({ user_id, username, token }) => {
         set({ user_id, username, token });
       },
@@ -22,6 +23,8 @@ export const authStore = create(
       setRoomId: roomId => {
         set({ roomId });
       },
+      setUsername: username => set({ username }),
+
       removeRoomId: () => {
         set({ roomId: null });
       },

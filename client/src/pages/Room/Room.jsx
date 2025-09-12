@@ -10,6 +10,7 @@ import {
 import { getRoomById } from '../../slice/roomSlice';
 import { message } from 'antd';
 import { useSocket } from '../../contexts/socketContext';
+import VideoCall from '../../components/commonComponents/VideoCall/VideoCall';
 
 function Room() {
   const queryClient = useQueryClient();
@@ -28,7 +29,7 @@ function Room() {
   const [messages, setMessages] = useState([]);
   const socket = useSocket();
   const [newMessage, setNewMessage] = useState('');
-
+  const [localStream, setLocalStream] = useState(null);
   const {
     data: roomDetails,
     isError,
@@ -49,7 +50,7 @@ function Room() {
   }, [isError]);
 
   useEffect(() => {
-    if (!socket ||  !roomId) return;
+    if (!socket || !roomId) return;
     // Join the room
     socket.emit('join-room', roomId);
 
@@ -68,12 +69,14 @@ function Room() {
 
     // Listen for new messages
     socket.on('receive-message', data => {
-      setMessages(prev => [...prev, {
-      message: data.message,
-      username: data.username,
-      timestamp: data.timestamp 
-    }]);
-
+      setMessages(prev => [
+        ...prev,
+        {
+          message: data.message,
+          username: data.username,
+          timestamp: data.timestamp,
+        },
+      ]);
     });
 
     // Listen for video call signals
@@ -167,14 +170,13 @@ function Room() {
       setNewMessage('');
     }
   };
-// const [signalData, setSignalData] = useState(null);
+  // const [signalData, setSignalData] = useState(null);
 
-// const sendSignal = (signal) => {
-//   if (socket) {
-//     socket.emit('signal', { roomId, signal });
-//   }
-// };
-
+  // const sendSignal = (signal) => {
+  //   if (socket) {
+  //     socket.emit('signal', { roomId, signal });
+  //   }
+  // };
 
   return (
     <div>
@@ -256,8 +258,14 @@ function Room() {
 
         <section id="stream__container" className=" w-full  md:w-3/5 h-screen ">
           <div className=" h-9/10 flex justify-center items-center ">
-            <div className="bg-black w-[95%] h-[95%]">
-              <div className="bg-red-500"></div>
+            <div className="bg-red-100 w-[95%] h-[95%]">
+              <div className="bg-black w-[95%] h-[95%]">
+                <VideoCall
+                  roomId={roomId}
+                  localStream={localStream}
+                  setLocalStream={setLocalStream}
+                />
+              </div>
             </div>
           </div>
           <div class="stream__actions  h-1/10 flex justify-center items-start">
@@ -375,8 +383,7 @@ function Room() {
                   className="flex-1 px-4 py-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-400 w-3/4 text-white"
                 />
                 <button
-               
-                  type='submit'
+                  type="submit"
                   className="bg-blue-500 text-white h-[40px] rounded-md hover:bg-blue-600 transition w-1/4"
                 >
                   <i class="fa-solid fa-paper-plane"></i>
