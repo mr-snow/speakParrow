@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import './Home.css';
 import { Select, Space, Modal, Button, message } from 'antd';
@@ -11,6 +11,7 @@ import LoadSpinner from '../../components/commonComponents/spinner/spinner';
 import { getCountryCode } from '../../utils/basicFunctions';
 import BaseLayout from '../../components/commonComponents/base-layout/BaseLayout';
 import { authStore } from '../../store/authStore';
+import { useDebug } from '../../contexts/authDebugInfo';
 
 const options = [
   { label: 'English', value: 'English' },
@@ -31,6 +32,7 @@ const options2 = [
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const { updateDebugData, debugData } = useDebug();
 
   const { control, handleSubmit, reset, setValue, register } = useForm({
     defaultValues: {
@@ -81,7 +83,6 @@ function Home() {
     });
   };
 
-
   const { data, refetch } = useQuery({
     queryKey: ['product_data', selectedCountry, selectedLanguage],
     queryFn: () =>
@@ -128,6 +129,7 @@ function Home() {
   });
 
   const openModal = async () => {
+    updateDebugData('key', 'somevalue');
     setErrorMessage('');
     const response = await validateToken();
     setAuthorized(response);

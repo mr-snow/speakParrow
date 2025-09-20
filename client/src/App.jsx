@@ -1,22 +1,25 @@
 import './App.css';
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home/Home';
 import { useThemeStore } from './store/themeStore';
 import LoadSpinner from './components/commonComponents/spinner/spinner';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import AuthDebugInfo from './contexts/authDebugInfo';
 
 const ResultPage = lazy(() => import('./pages/ResultPage/ResultPage'));
 const SignupPage = lazy(() => import('./pages/Signup/SignupPage'));
 const Lobby = lazy(() => import('./pages/lobby/lobby'));
 const Room = lazy(() => import('./pages/Room/room'));
+const RoomList = lazy(() => import('./components/TestComponent/RoomList'));
 
 function App() {
   const { appTheme } = useThemeStore();
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', appTheme);
   }, [appTheme]);
+  const [userId, setUserId] = useState(null);
   return (
     <>
       <Suspense
@@ -32,6 +35,10 @@ function App() {
           <Route path="/test" element={<ResultPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<SignupPage />} />
+          <Route
+            path="/testroom"
+            element={<RoomList setGlobalUserId={setUserId} />}
+          />
           <Route
             path="/room"
             element={
