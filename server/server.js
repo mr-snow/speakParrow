@@ -3,8 +3,6 @@ require('dotenv').config();
 const chalk = require('chalk');
 const db = require('./db');
 const cors = require('cors');
-const path = require('path');
-
 const socketIo = require('socket.io');
 const { createServer } = require('http');
 
@@ -16,16 +14,14 @@ app.use(express.json());
 const routes = require('./routes/index');
 app.use('/api/', routes);
 
-// Configure CORS properly
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:5173', // Your React app URL
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   },
 });
-
 // Store room data
 const rooms = new Map();
 const userSocketMap = new Map();
@@ -33,33 +29,17 @@ const userSocketMap = new Map();
 io.on('connection', socket => {
   const userId = socket.handshake.query.userId;
   const roomId = socket.handshake.query.roomId;
-
-  console.log('Connection details:', {
-    socketId: socket.id,
-    userId: userId,
-    roomId: roomId,
-    query: socket.handshake.query,
-  });
-
-  console.log('User connected - Socket ID:', socket.id, 'User ID:', userId);
-
   // Store the user ID in the socket object for later use
   socket.userId = userId;
   // Check if user already has a connection and disconnect it
   if (userId && userSocketMap.has(userId)) {
     const oldSocketId = userSocketMap.get(userId);
-    console.log(
-      `User ${userId} already connected with socket ${oldSocketId}, disconnecting old connection`
-    );
-
     // Disconnect the old socket
     const oldSocket = io.sockets.sockets.get(oldSocketId);
     if (oldSocket) {
       oldSocket.disconnect(true);
-      console.log(`Disconnected old socket ${oldSocketId}`);
     }
   }
-  // Store the new socket connection
   if (userId) {
     userSocketMap.set(userId, socket.id);
     console.log(`Stored user ${userId} with socket ${socket.id}`);
@@ -73,10 +53,8 @@ io.on('connection', socket => {
         users.delete(userId);
         socket.leave(room);
         console.log(`Removed user ${userId} from room ${room}`);
-
         if (users.size === 0) {
           rooms.delete(room);
-          console.log(`Room ${room} is now empty and has been removed`);
         }
       }
     });
@@ -88,10 +66,8 @@ io.on('connection', socket => {
       rooms.set(roomId, new Set());
     }
     rooms.get(roomId).add(userId);
-
     // Notify others in the room about the new user
     socket.to(roomId).emit('user-connected', userId);
-    console.log(`Notified room ${roomId} about user ${userId} connection`);
     // Send success response to client
     socket.emit('join-room-success', { roomId, userId });
   }
@@ -100,7 +76,6 @@ io.on('connection', socket => {
   socket.on('join-room', data => {
     const { roomId, userId } = data;
     if (!roomId || !userId) {
-      console.error('Missing roomId or userId in join-room:', data);
       socket.emit('join-room-error', { message: 'Missing roomId or userId' });
       return;
     }
@@ -109,12 +84,10 @@ io.on('connection', socket => {
       if (users.has(userId)) {
         users.delete(userId);
         socket.leave(room);
-        console.log(`Removed user ${userId} from room ${room}`);
         // Notify room about user leaving
         socket.to(room).emit('user-disconnected', userId);
         if (users.size === 0) {
           rooms.delete(room);
-          console.log(`Room ${room} is now empty and has been removed`);
         }
       }
     });
@@ -125,7 +98,6 @@ io.on('connection', socket => {
       rooms.set(roomId, new Set());
     }
     rooms.get(roomId).add(userId);
-    // Notify others in the room about the new user
     socket.to(roomId).emit('user-connected', userId);
     console.log(`Notified room ${roomId} about user ${userId} connection`);
     // Send success response to client
@@ -134,14 +106,6 @@ io.on('connection', socket => {
 
   // WebRTC signaling handlers
   socket.on('offer', data => {
-    console.log(
-      'Offer from user:',
-      socket.userId,
-      'to:',
-      data.targetUserId,
-      'room:',
-      data.roomId
-    );
     // Send offer to the specific target user
     socket.to(data.roomId).emit('offer', {
       offer: data.offer,
@@ -152,15 +116,6 @@ io.on('connection', socket => {
   });
 
   socket.on('answer', data => {
-    console.log(
-      'Answer from user:',
-      socket.userId,
-      'to:',
-      data.targetUserId,
-      'room:',
-      data.roomId
-    );
-    // Send answer to the specific target user
     socket.to(data.roomId).emit('answer', {
       answer: data.answer,
       senderId: socket.userId,
@@ -170,15 +125,6 @@ io.on('connection', socket => {
   });
 
   socket.on('ice-candidate', data => {
-    console.log(
-      'ICE candidate from:',
-      socket.userId,
-      'to:',
-      data.targetUserId,
-      'room:',
-      data.roomId
-    );
-    // Send ICE candidate to the specific target user
     socket.to(data.roomId).emit('ice-candidate', {
       candidate: data.candidate,
       targetUserId: data.targetUserId,
@@ -203,22 +149,16 @@ io.on('connection', socket => {
   // Handle disconnection
   socket.on('disconnect', reason => {
     console.log('User disconnected:', userId || socket.id, 'Reason:', reason);
-    // Remove user from socket map
     if (userId && userSocketMap.get(userId) === socket.id) {
       userSocketMap.delete(userId);
       console.log(`Removed user ${userId} from socket map`);
     }
-    // Remove user from all rooms
     rooms.forEach((users, roomId) => {
       if (users.has(userId)) {
         users.delete(userId);
         socket.to(roomId).emit('user-disconnected', userId);
-        console.log(`User ${userId} disconnected from room ${roomId}`);
-
-        // Clean up empty rooms //
         if (users.size === 0) {
           rooms.delete(roomId);
-          console.log(`Room ${roomId} is now empty and has been removed`);
         }
       }
     });
