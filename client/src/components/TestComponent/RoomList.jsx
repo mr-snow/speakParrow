@@ -14,7 +14,7 @@ const RoomList = () => {
   const [connectionError, setConnectionError] = useState('');
   const [inputUserId, setInputUserId] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
-  
+
   // Use ref to track if we've set up listeners
   const listenersSetRef = useRef(false);
 
@@ -40,19 +40,18 @@ const RoomList = () => {
       setConnectionError('');
       setIsConnecting(true);
       listenersSetRef.current = false;
-      
+
       try {
         // Set the user ID in context - this will trigger socket connection
         setUserId(inputUserId);
-        
-        // Set timeout for connection
+
+        // Set timeout for connection 
         setTimeout(() => {
           if (!isConnected && isConnecting) {
             setConnectionError('Socket connection timeout. Please try again.');
             setIsConnecting(false);
           }
         }, 5000);
-
       } catch (error) {
         console.error('Error joining room:', error);
         setConnectionError('Failed to join room. Please try again.');
@@ -65,7 +64,7 @@ const RoomList = () => {
 
   const proceedWithJoinRoom = () => {
     if (!socket || listenersSetRef.current) return;
-    
+
     listenersSetRef.current = true;
 
     try {
@@ -73,23 +72,23 @@ const RoomList = () => {
       setStoreRoomId(roomId);
 
       // Set up join room listeners
-      socket.once('join-room-success', (data) => {
+      socket.once('join-room-success', data => {
         console.log('Successfully joined room:', data);
         setJoined(true);
         setIsConnecting(false);
       });
-      
-      socket.once('join-room-error', (error) => {
+
+      socket.once('join-room-error', error => {
         console.error('Failed to join room:', error);
         setConnectionError(error.message || 'Failed to join room');
         setIsConnecting(false);
       });
 
       // Emit join-room event to server
-      socket.emit('join-room', { 
-        roomId, 
-        userId: inputUserId, 
-        username: username || `User-${inputUserId}` 
+      socket.emit('join-room', {
+        roomId,
+        userId: inputUserId,
+        username: username || `User-${inputUserId}`,
       });
 
       // Set timeout for join operation
@@ -99,7 +98,6 @@ const RoomList = () => {
           setIsConnecting(false);
         }
       }, 5000);
-
     } catch (error) {
       console.error('Error in join room process:', error);
       setConnectionError('Failed to join room. Please try again.');
@@ -114,8 +112,6 @@ const RoomList = () => {
     // Remove room ID from auth store
     removeRoomId();
     setJoined(false);
-    // Optional: Reset user ID when leaving room
-    // setUserId(null);
   };
 
   const copyToClipboard = text => {
@@ -170,8 +166,8 @@ const RoomList = () => {
                 disabled={isConnecting}
               />
             </div>
-            <button 
-              onClick={joinRoom} 
+            <button
+              onClick={joinRoom}
               className="join-button"
               disabled={isConnecting}
             >

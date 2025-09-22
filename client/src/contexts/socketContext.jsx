@@ -1,7 +1,6 @@
 // contexts/socketContext.jsx - EXPAND existing context
 import { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-
 const SocketContext = createContext();
 
 export const useSocket = () => {
@@ -16,7 +15,6 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (userId) {
       console.log('Creating socket connection for user:', userId);
-      
       const newSocket = io('http://localhost:3000', {
         query: { userId },
         transports: ['websocket', 'polling'],
@@ -29,7 +27,7 @@ export const SocketProvider = ({ children }) => {
         setIsConnected(true);
       });
 
-      newSocket.on('disconnect', (reason) => {
+      newSocket.on('disconnect', reason => {
         console.log('Socket disconnected. Reason:', reason);
         setIsConnected(false);
       });
@@ -55,12 +53,10 @@ export const SocketProvider = ({ children }) => {
     socket,
     userId,
     setUserId,
-    isConnected
+    isConnected,
+    setIsConnected,
   };
-
   return (
-    <SocketContext.Provider value={value}>
-      {children}
-    </SocketContext.Provider>
+    <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
   );
 };
